@@ -1,0 +1,15 @@
+node_modules/
+dist/
+coverage/
+
+# Secretos: nunca versionar
+.env
+.env.*
+!.env.example
+
+# Artefactos
+*.log
+npm-debug.log*
+.angular/
+.DS_Store
+Thumbs.db

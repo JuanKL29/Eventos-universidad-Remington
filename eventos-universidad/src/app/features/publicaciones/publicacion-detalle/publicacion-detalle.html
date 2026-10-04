@@ -1,0 +1,410 @@
+@if (publicacion(); as p) {
+  <div class="w-full max-w-4xl mx-auto flex flex-col gap-space-lg">
+    <!-- Action Toolbar -->
+    <div
+      class="w-full flex items-center justify-between gap-space-md bg-surface-container-lowest border border-hairline rounded-xl p-space-sm sm:p-space-md"
+    >
+      <button
+        type="button"
+        class="inline-flex items-center gap-space-xs text-primary hover:text-on-primary-fixed-variant transition-colors px-space-md py-2 rounded-full hover:bg-surface-container-low font-label-lg text-label-lg"
+        (click)="irAInicio()"
+      >
+        <span class="material-symbols-outlined text-lg">arrow_back</span>
+        <span>Volver a la cartelera</span>
+      </button>
+
+      <div class="flex items-center gap-space-xs sm:gap-space-sm">
+        <button
+          type="button"
+          id="btn-save"
+          class="inline-flex items-center gap-space-xs px-space-md py-2 rounded-full transition-all font-label-lg text-label-lg"
+          [class.bg-surface-container]="!guardado()"
+          [class.hover:bg-secondary-fixed]="!guardado()"
+          [class.text-primary]="!guardado()"
+          [class.bg-primary-fixed]="guardado()"
+          [class.text-on-primary-fixed-variant]="guardado()"
+          (click)="alternarGuardado()"
+        >
+          <span
+            class="material-symbols-outlined text-lg"
+            [class.fill-1]="guardado()"
+            >{{ guardado() ? 'bookmark' : 'bookmark_border' }}</span
+          >
+          <span>{{ guardado() ? 'Guardado' : 'Guardar publicacion' }}</span>
+        </button>
+
+        <button
+          type="button"
+          class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface-variant transition-colors"
+          title="Compartir"
+          (click)="compartir()"
+        >
+          <span class="material-symbols-outlined text-lg">share</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Editorial Reading Card -->
+    <article class="w-full bg-surface-container-lowest border border-hairline rounded-xl overflow-hidden flex flex-col">
+      <!-- Header & Metadata -->
+      <div class="p-space-lg md:p-space-xl flex flex-col gap-space-md">
+        <div class="flex flex-wrap items-center gap-space-sm">
+          <span
+            class="inline-flex items-center px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed-variant font-label-sm text-label-sm uppercase tracking-wide"
+          >
+            {{ etiquetaTipo[p.tipo] }}
+          </span>
+          @if (p.subtitulo) {
+            <span
+              class="inline-flex items-center px-3 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed-variant font-label-sm text-label-sm"
+            >
+              {{ p.subtitulo }}
+            </span>
+          }
+          <span class="flex items-center gap-1 text-on-surface-variant font-body-sm text-body-sm ml-auto">
+            <span class="material-symbols-outlined text-sm">schedule</span>
+            {{ fechaLarga(p.fechaInicio) }} &middot; {{ hora12(p.hora) }}
+          </span>
+        </div>
+
+        <h1 class="font-display-lg text-display-lg text-primary tracking-tight leading-tight">
+          {{ p.titulo }}
+        </h1>
+
+        <div class="flex items-center gap-space-md pt-space-xs">
+          <div class="relative shrink-0">
+            @if (p.avatarUrl) {
+              <img
+                class="w-12 h-12 rounded-full object-cover"
+                [src]="p.avatarUrl"
+                [alt]="p.organizador"
+              />
+            } @else {
+              <div
+                class="w-12 h-12 rounded-full bg-primary-fixed text-primary flex items-center justify-center"
+              >
+                <span class="material-symbols-outlined text-2xl">account_balance</span>
+              </div>
+            }
+            <span
+              class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-primary rounded-full flex items-center justify-center text-on-primary text-[9px] shadow"
+              >&#10003;</span
+            >
+          </div>
+          <div class="flex flex-col min-w-0">
+            <div class="flex items-center gap-space-xs">
+              <span class="font-label-lg text-label-lg text-primary truncate">{{ p.organizador }}</span>
+              <span
+                class="material-symbols-outlined text-primary text-base"
+                title="Canal Verificado"
+                >verified</span
+              >
+            </div>
+            @if (p.credencial) {
+              <span class="font-body-sm text-body-sm text-on-surface-variant">{{ p.credencial }}</span>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Cover Image -->
+      @if (p.imagenUrl) {
+        <div class="relative w-full aspect-[16/9] bg-surface-container-high overflow-hidden">
+          <img class="w-full h-full object-cover" [src]="p.imagenUrl" [alt]="p.titulo" />
+          @if (p.pieDeImagen) {
+            <div
+              class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-primary/80 via-primary/20 to-transparent p-space-md text-on-primary"
+            >
+              <p class="font-label-sm text-label-sm opacity-90 tracking-wide">{{ p.pieDeImagen }}</p>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Body -->
+      <div class="p-space-lg md:p-space-xl flex flex-col gap-space-lg text-on-surface">
+        <div
+          class="cuerpo-publicacion font-body-lg text-body-lg leading-relaxed text-on-surface"
+          [innerHTML]="p.contenido"
+        ></div>
+
+        <!-- Highlights Bento -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-space-md my-space-xs">
+          <div class="bg-surface-container-low p-space-md rounded-xl flex flex-col gap-space-xs">
+            <span class="material-symbols-outlined text-primary text-2xl">event_available</span>
+            <span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Fecha del Evento</span>
+            <span class="font-headline-sm text-headline-sm text-primary">
+              {{ rangoFechas(p.fechaInicio, p.fechaFin) }}
+            </span>
+          </div>
+          <div class="bg-surface-container-low p-space-md rounded-xl flex flex-col gap-space-xs">
+            <span class="material-symbols-outlined text-primary text-2xl">pin_drop</span>
+            <span class="font-label-sm text-label-sm text-on-surface-variant uppercase"
+              >Ubicacion Principal</span
+            >
+            <span class="font-headline-sm text-headline-sm text-primary">{{ p.lugar }}</span>
+          </div>
+          @if (p.fechaFin) {
+            <div class="bg-surface-container-low p-space-md rounded-xl flex flex-col gap-space-xs">
+              <span class="material-symbols-outlined text-accent-alert text-2xl">timer</span>
+              <span class="font-label-sm text-label-sm text-on-surface-variant uppercase"
+                >Cierre de Postulaciones</span
+              >
+              <span class="font-headline-sm text-headline-sm text-accent-alert">
+                {{ fechaLarga(p.fechaFin) }}, 23:59 hrs
+              </span>
+            </div>
+          } @else {
+            <div class="bg-surface-container-low p-space-md rounded-xl flex flex-col gap-space-xs">
+              <span class="material-symbols-outlined text-primary text-2xl">groups</span>
+              <span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Cupo</span>
+              <span class="font-headline-sm text-headline-sm text-primary">
+                {{ p.inscritos }} inscritos
+              </span>
+            </div>
+          }
+        </div>
+
+        <!-- Ejes -->
+        @if (p.ejes?.length) {
+          <div class="flex flex-col gap-space-sm pt-space-xs">
+            <h2 class="font-headline-lg text-headline-lg text-primary">Ejes de Participacion</h2>
+            <p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+              Las propuestas podran adscribirse a dos modalidades primarias segun los objetivos de
+              los participantes:
+            </p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md pt-space-xs">
+              @for (eje of p.ejes; track eje.numero) {
+                <div
+                  class="bg-surface-container-lowest border border-hairline p-space-md rounded-xl flex flex-col gap-space-xs"
+                >
+                  <div
+                    class="w-8 h-8 rounded-full bg-secondary-fixed text-on-secondary-fixed-variant flex items-center justify-center font-label-md text-label-md"
+                  >
+                    {{ eje.numero }}
+                  </div>
+                  <h3 class="font-headline-sm text-headline-sm text-primary">{{ eje.titulo }}</h3>
+                  <p class="font-body-sm text-body-sm text-on-surface-variant">{{ eje.descripcion }}</p>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Requisitos -->
+        @if (p.requisitos?.length) {
+          <div class="flex flex-col gap-space-sm pt-space-xs">
+            <h2 class="font-headline-lg text-headline-lg text-primary">Requisitos de Inscripcion</h2>
+            <ul
+              class="flex flex-col gap-space-xs font-body-md text-body-md text-on-surface pl-space-md list-disc marker:text-primary"
+            >
+              @for (requisito of p.requisitos; track requisito) {
+                <li>{{ requisito }}</li>
+              }
+            </ul>
+          </div>
+        }
+
+        <!-- Cronograma -->
+        @if (p.cronograma?.length) {
+          <div class="bg-surface-container-low p-space-md sm:p-space-lg rounded-xl flex flex-col gap-space-md">
+            <div class="flex items-center justify-between">
+              <h3 class="font-headline-sm text-headline-sm text-primary">Cronograma Oficial del Proceso</h3>
+              <span class="font-label-sm text-label-sm text-on-surface-variant">
+                Fase
+                {{ (p.cronograma.findIndex((f) => f.estado === 'activo') ?? 0) + 1 }} /
+                {{ p.cronograma.length }}
+                en curso
+              </span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-space-sm pt-space-xs">
+              @for (fase of p.cronograma; track fase.rango) {
+                <div
+                  class="bg-surface-container-lowest border border-hairline p-space-sm rounded-lg flex flex-col"
+                  [class.opacity-80]="fase.estado === 'pendiente'"
+                >
+                  <span
+                    class="font-label-sm text-label-sm font-semibold"
+                    [class.text-primary]="fase.estado === 'activo'"
+                    [class.text-outline]="fase.estado !== 'activo'"
+                  >
+                    {{ fase.rango }}
+                  </span>
+                  <span class="font-label-md text-label-md text-on-surface">{{ fase.titulo }}</span>
+                  @if (fase.estado === 'activo') {
+                    <span class="inline-flex items-center gap-1 text-[11px] text-accent-alert mt-1 font-medium">
+                      &#9679; {{ fase.nota }}
+                    </span>
+                  } @else {
+                    <span class="text-[11px] text-outline mt-1">{{ fase.nota }}</span>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Adjuntos -->
+        @if (p.adjuntos?.length) {
+          <div class="flex flex-col gap-space-sm pt-space-md">
+            <div class="flex items-center gap-space-xs">
+              <span class="material-symbols-outlined text-primary text-xl">attach_file</span>
+              <h2 class="font-headline-lg text-headline-lg text-primary">
+                Archivos Adjuntos y Documentacion
+              </h2>
+            </div>
+            <p class="font-body-sm text-body-sm text-on-surface-variant">
+              Descarga los lineamientos normativos y la ficha obligatoria para formalizar tu registro
+              antes del plazo limite.
+            </p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md pt-space-xs">
+              @for (adjunto of p.adjuntos; track adjunto.nombre) {
+                <div
+                  class="flex items-center justify-between gap-space-md p-space-md bg-surface-container-low hover:bg-surface-container rounded-xl transition-all border border-hairline"
+                >
+                  <div class="flex items-center gap-space-sm min-w-0">
+                    <div
+                      class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
+                      [class.bg-error-container]="adjunto.tipo === 'PDF'"
+                      [class.text-on-error-container]="adjunto.tipo === 'PDF'"
+                      [class.bg-secondary-fixed]="adjunto.tipo !== 'PDF'"
+                      [class.text-on-secondary-fixed-variant]="adjunto.tipo !== 'PDF'"
+                    >
+                      <span class="material-symbols-outlined text-2xl">
+                        {{ adjunto.tipo === 'PDF' ? 'picture_as_pdf' : 'description' }}
+                      </span>
+                    </div>
+                    <div class="flex flex-col min-w-0">
+                      <span
+                        class="font-label-lg text-label-lg text-primary truncate"
+                        [title]="adjunto.nombre"
+                        >{{ adjunto.nombre }}</span
+                      >
+                      <span class="font-body-sm text-body-sm text-on-surface-variant">
+                        {{ adjunto.tipo }} &middot; {{ tamanoLegible(adjunto.tamanoKb) }} &middot;
+                        {{ adjunto.editable ? 'Editable' : 'Verificado' }}
+                      </span>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    class="shrink-0 inline-flex items-center gap-1 px-space-md py-2 bg-primary hover:bg-midnight text-on-primary rounded-full font-label-sm text-label-sm transition-colors"
+                    (click)="descargar(adjunto)"
+                  >
+                    <span class="material-symbols-outlined text-base">download</span>
+                    <span>Descargar</span>
+                  </button>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Contacto -->
+        @if (p.contacto) {
+          <div class="p-space-md bg-surface-container-low rounded-xl flex items-start gap-space-sm mt-space-xs">
+            <span class="material-symbols-outlined text-primary text-xl shrink-0 mt-0.5">info</span>
+            <p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+              Para dudas sobre el proceso de validacion o consultas tematicas, contactar al despacho
+              de la
+              {{ p.organizador }} a traves del correo
+              <span class="font-label-md text-primary">{{ p.contacto!.email }}</span>
+              @if (p.contacto!.extension) {
+                o mediante la extension interna {{ p.contacto!.extension }}.
+              }
+            </p>
+          </div>
+        }
+
+        <!-- Etiquetas -->
+        @if (p.etiquetas.length) {
+          <div class="flex flex-wrap gap-1.5">
+            @for (etiqueta of p.etiquetas; track etiqueta) {
+              <span class="chip-facultad">#{{ etiqueta }}</span>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Footer Actions -->
+      <div
+        class="p-space-lg bg-surface-container-low border-t border-hairline flex flex-col sm:flex-row items-center justify-between gap-space-md"
+      >
+        <button
+          type="button"
+          class="w-full sm:w-auto inline-flex items-center justify-center gap-space-xs px-space-lg py-2.5 rounded-full bg-surface-container-lowest border border-hairline hover:bg-surface-container text-primary font-label-lg text-label-lg transition-colors"
+          (click)="irAInicio()"
+        >
+          <span class="material-symbols-outlined text-lg">arrow_back</span>
+          <span>Volver a todas las publicaciones</span>
+        </button>
+        <div class="w-full sm:w-auto flex items-center justify-end gap-space-sm">
+          <button
+            type="button"
+            class="flex-1 sm:flex-initial inline-flex items-center justify-center gap-space-xs px-space-lg py-2.5 rounded-full bg-primary hover:bg-midnight text-on-primary font-label-lg text-label-lg transition-colors"
+            (click)="compartir()"
+          >
+            <span class="material-symbols-outlined text-lg">link</span>
+            <span>Compartir enlace</span>
+          </button>
+        </div>
+      </div>
+    </article>
+
+    <!-- Relacionadas -->
+    @if (relacionadas().length) {
+      <div class="w-full flex flex-col gap-space-sm pt-space-xs mb-space-xl">
+        <div class="flex items-center justify-between px-space-xs">
+          <h3 class="font-headline-sm text-headline-sm text-primary">Otras publicaciones relacionadas</h3>
+          <a routerLink="/" class="text-primary hover:text-on-primary-fixed-variant font-label-md text-label-md"
+            >Ver todas &rarr;</a
+          >
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+          @for (rel of relacionadas(); track rel.id) {
+            <a
+              [routerLink]="['/publicaciones', rel.id]"
+              class="p-space-md bg-surface-container-lowest hover:bg-surface-container-low border border-hairline rounded-xl flex items-start gap-space-md transition-all group"
+            >
+              <div class="w-16 h-16 rounded-lg bg-surface-container-high overflow-hidden shrink-0">
+                @if (rel.imagenUrl) {
+                  <img
+                    class="w-full h-full object-cover"
+                    [src]="rel.imagenUrl"
+                    [alt]="rel.titulo"
+                  />
+                } @else {
+                  <div class="w-full h-full flex items-center justify-center text-primary">
+                    <span class="material-symbols-outlined text-2xl">{{ iconoTipo[rel.tipo] }}</span>
+                  </div>
+                }
+              </div>
+              <div class="flex flex-col min-w-0 flex-1">
+                <span class="font-label-sm text-label-sm text-on-surface-variant">{{ rel.organizador }}</span>
+                <span
+                  class="font-headline-sm text-headline-sm text-primary group-hover:text-primary-container transition-colors truncate"
+                  >{{ rel.titulo }}</span
+                >
+                <span class="font-body-sm text-body-sm text-on-surface-variant mt-1">
+                  {{ fechaLarga(rel.fechaInicio) }}
+                </span>
+              </div>
+            </a>
+          }
+        </div>
+      </div>
+    }
+  </div>
+} @else {
+  <div class="w-full max-w-4xl mx-auto flex flex-col items-center gap-space-md py-space-xl">
+    <span class="material-symbols-outlined text-5xl text-outline">search_off</span>
+    <h1 class="font-headline-lg text-headline-lg text-primary">Publicacion no encontrada</h1>
+    <p class="font-body-md text-body-md text-on-surface-variant">
+      El aviso que buscas pudo haber sido retirado o archivado.
+    </p>
+    <button type="button" class="btn-primario inline-flex items-center gap-space-xs" (click)="irAInicio()">
+      <span class="material-symbols-outlined text-lg">arrow_back</span>
+      Volver a la cartelera
+    </button>
+  </div>
+}

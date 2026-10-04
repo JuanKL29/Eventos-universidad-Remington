@@ -1,0 +1,22 @@
+<router-outlet />
+
+<!--
+  Contenedor global de notificaciones. Antes solo publicacion-detalle renderizaba
+  la cola del ToastService, por lo que los toast.mostrar() de otras vistas
+  (notificaciones, gestion de publicaciones, este panel) no se veian.
+-->
+<div class="fixed bottom-6 right-6 z-[60] flex flex-col items-end gap-space-xs pointer-events-none">
+  @for (t of toastSvc.toasts(); track t.id) {
+    <div
+      class="pointer-events-auto px-space-md py-3 bg-inverse-surface text-inverse-on-surface rounded-xl shadow-3 flex items-center gap-space-xs font-label-md text-label-md transition-all duration-300"
+      [class.translate-y-0]="t.visible"
+      [class.opacity-100]="t.visible"
+      [class.translate-y-6]="!t.visible"
+      [class.opacity-0]="!t.visible"
+      role="status"
+    >
+      <span class="material-symbols-outlined text-surface-tint">{{ t.icono }}</span>
+      <span>{{ t.mensaje }}</span>
+    </div>
+  }
+</div>

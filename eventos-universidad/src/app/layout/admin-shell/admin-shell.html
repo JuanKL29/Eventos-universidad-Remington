@@ -1,0 +1,160 @@
+<aside
+  class="fixed left-0 top-0 h-full w-64 bg-surface-container-lowest border-r border-hairline shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-50 flex-col justify-between py-space-lg px-space-md hidden lg:flex"
+>
+  <div class="flex flex-col gap-space-lg">
+    <div class="flex items-center gap-space-sm px-space-sm">
+      <img alt="Uniremington Logo" class="h-8 w-auto object-contain" [src]="logo" />
+      <div class="flex flex-col">
+        <span class="font-headline-sm text-headline-sm text-primary leading-none">Remington</span>
+        <span class="font-label-sm text-label-sm text-on-surface-variant">Admin Console</span>
+      </div>
+    </div>
+
+    <div class="px-space-sm">
+      <span
+        class="inline-block px-2.5 py-1 rounded bg-primary text-on-primary font-label-sm text-label-sm tracking-wide uppercase"
+        >Panel Rectoría / Admin</span
+      >
+    </div>
+
+    <nav class="flex flex-col gap-1">
+      @for (enlace of enlaces; track enlace.path) {
+        @if (enlace.deshabilitado) {
+          <span
+            class="flex items-center gap-space-sm px-space-md py-2.5 rounded-lg text-on-surface-variant opacity-50 cursor-not-allowed font-label-lg text-label-lg"
+            title="Disponible próximamente"
+          >
+            <span class="material-symbols-outlined text-xl">{{ enlace.icono }}</span>
+            {{ enlace.etiqueta }}
+          </span>
+        } @else {
+          <a
+            class="flex items-center gap-space-sm px-space-md py-2.5 rounded-lg font-label-lg text-label-lg transition-colors"
+            [routerLink]="enlace.path"
+            routerLinkActive="bg-primary text-on-primary font-semibold"
+            [routerLinkActiveOptions]="{ exact: enlace.exacto }"
+            [class.text-on-surface-variant]="true"
+            [class.hover:bg-surface-container-high]="true"
+            [class.hover:text-on-surface]="true"
+          >
+            <span class="material-symbols-outlined text-xl">{{ enlace.icono }}</span>
+            {{ enlace.etiqueta }}
+          </a>
+        }
+      }
+    </nav>
+  </div>
+
+  <div class="flex flex-col gap-space-sm pt-space-md">
+    <a
+      routerLink="/"
+      class="flex items-center justify-center gap-space-xs w-full py-2.5 px-space-md rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-md text-label-md hover:bg-primary-fixed transition-colors"
+    >
+      <span class="material-symbols-outlined text-base">arrow_back</span>
+      Volver a vista Usuario
+    </a>
+    <button
+      type="button"
+      class="flex items-center gap-space-sm px-space-sm py-space-xs w-full text-left rounded-lg hover:bg-surface-container transition-colors"
+      title="Cerrar sesión"
+      (click)="salir()"
+    >
+      <img alt="Perfil" class="w-8 h-8 rounded-full object-cover" [src]="avatar" />
+      <div class="flex flex-col truncate">
+        <span class="font-label-md text-label-md text-on-surface truncate">
+          {{ auth.usuario()?.nombre ?? 'Administrador Campus' }}
+        </span>
+        <span class="font-body-sm text-body-sm text-outline truncate">
+          {{ auth.usuario()?.correo ?? 'admin@uniremington.edu.co' }}
+        </span>
+      </div>
+      <span class="material-symbols-outlined text-base text-outline ml-auto">logout</span>
+    </button>
+  </div>
+</aside>
+
+<div class="lg:pl-64">
+  <header
+    class="fixed top-0 left-0 lg:left-64 right-0 h-16 bg-surface-container-lowest border-b border-hairline shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex items-center justify-between px-space-xl"
+  >
+    <div class="flex items-center gap-space-md">
+      <button
+        type="button"
+        class="lg:hidden flex items-center justify-center p-1 text-on-surface-variant"
+        (click)="toggleMenu()"
+        aria-label="Abrir menú"
+      >
+        <span class="material-symbols-outlined text-2xl">menu</span>
+      </button>
+      <img alt="Uniremington Logo" class="h-6 w-auto object-contain lg:hidden" [src]="logo" />
+      <span class="font-headline-sm text-headline-sm text-primary hidden lg:inline"
+        >Panel de Administración</span
+      >
+    </div>
+
+    <div class="flex items-center gap-space-md">
+      <a
+        routerLink="/notificaciones"
+        class="relative flex items-center justify-center"
+        title="Notificaciones"
+      >
+        <span class="material-symbols-outlined text-on-surface-variant hover:text-on-surface cursor-pointer"
+          >notifications</span
+        >
+        @if (notif.noLeidas() > 0) {
+          <span
+            class="absolute top-0 right-0 min-w-2 h-2 px-1 rounded-full bg-accent-alert text-[10px] text-on-error flex items-center justify-center font-label-sm"
+            >{{ notif.noLeidas() }}</span
+          >
+        }
+      </a>
+      <img
+        alt="Perfil"
+        class="w-8 h-8 rounded-full object-cover ring-2 ring-primary-fixed"
+        [src]="avatar"
+      />
+    </div>
+  </header>
+
+  <!-- Drawer movil -->
+  @if (menuAbierto()) {
+    <div class="fixed inset-0 z-40 bg-midnight/40 lg:hidden" (click)="cerrarMenu()"></div>
+    <nav
+      class="fixed top-16 left-0 right-0 z-40 bg-surface-container-lowest border-b border-hairline shadow-lg flex flex-col p-space-sm lg:hidden"
+    >
+      @for (enlace of enlaces; track enlace.path) {
+        @if (enlace.deshabilitado) {
+          <span
+            class="flex items-center gap-space-sm px-space-md py-2.5 rounded-lg text-on-surface-variant opacity-50 cursor-not-allowed font-label-lg text-label-lg"
+          >
+            <span class="material-symbols-outlined text-xl">{{ enlace.icono }}</span>
+            {{ enlace.etiqueta }}
+          </span>
+        } @else {
+          <a
+            class="flex items-center gap-space-sm px-space-md py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container font-label-lg text-label-lg"
+            [routerLink]="enlace.path"
+            routerLinkActive="bg-primary text-on-primary font-semibold"
+            [routerLinkActiveOptions]="{ exact: enlace.exacto }"
+            (click)="cerrarMenu()"
+          >
+            <span class="material-symbols-outlined text-xl">{{ enlace.icono }}</span>
+            {{ enlace.etiqueta }}
+          </a>
+        }
+      }
+      <a
+        routerLink="/"
+        class="flex items-center justify-center gap-space-xs w-full py-2.5 px-space-md rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-md text-label-md"
+        (click)="cerrarMenu()"
+      >
+        <span class="material-symbols-outlined text-base">arrow_back</span>
+        Volver a vista Usuario
+      </a>
+    </nav>
+  }
+
+  <main class="w-full pt-16 bg-canvas min-h-screen">
+    <router-outlet />
+  </main>
+</div>

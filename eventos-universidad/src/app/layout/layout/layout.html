@@ -1,0 +1,186 @@
+<!-- Header -->
+<header
+  class="fixed top-0 left-0 right-0 h-16 bg-surface border-b border-hairline shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex items-center justify-between px-space-lg"
+>
+  <div class="flex items-center gap-space-md">
+    <button
+      type="button"
+      class="lg:hidden flex items-center justify-center p-1 text-on-surface-variant"
+      (click)="alternarMenu()"
+      aria-label="Abrir menú"
+    >
+      <span class="material-symbols-outlined text-2xl">menu</span>
+    </button>
+    <a routerLink="/" class="flex items-center gap-space-sm" (click)="cerrarMenu()">
+      <img alt="Uniremington Logo" class="h-8 w-auto object-contain" [src]="logo" />
+      <span class="flex flex-col leading-none hidden sm:flex">
+        <span class="font-headline-sm text-headline-sm text-primary">Remington</span>
+        <span class="font-label-sm text-label-sm text-on-surface-variant"
+          >Campus Digital Informativo</span
+        >
+      </span>
+    </a>
+  </div>
+
+  <!-- Nav desktop -->
+  <nav class="hidden lg:flex items-center gap-1">
+    @for (enlace of visibles(); track enlace.path) {
+      <a
+        [routerLink]="enlace.path"
+        routerLinkActive="bg-primary-fixed text-primary font-semibold"
+        [routerLinkActiveOptions]="{ exact: enlace.exacto }"
+        class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-label-lg text-label-lg transition-colors"
+      >
+        <span class="material-symbols-outlined text-lg">{{ enlace.icono }}</span>
+        {{ enlace.etiqueta }}
+        @if (enlace.path === '/notificaciones' && notif.noLeidas() > 0) {
+          <span
+            class="min-w-4 h-4 px-1 rounded-full bg-accent-alert text-on-error text-[10px] font-semibold flex items-center justify-center"
+            >{{ notif.noLeidas() }}</span
+          >
+        }
+      </a>
+    }
+  </nav>
+
+  <!-- Sesion -->
+  <div class="flex items-center gap-space-sm">
+    @if (auth.autenticado()) {
+      <a
+        routerLink="/notificaciones"
+        class="lg:hidden relative flex items-center justify-center p-1 text-on-surface-variant"
+        title="Notificaciones"
+      >
+        <span class="material-symbols-outlined text-xl">notifications</span>
+        @if (notif.noLeidas() > 0) {
+          <span
+            class="absolute top-0 right-0 min-w-2 h-2 px-1 rounded-full bg-accent-alert text-[10px] text-on-error flex items-center justify-center"
+            >{{ notif.noLeidas() }}</span
+          >
+        }
+      </a>
+      <div class="relative">
+        <button
+          type="button"
+          class="flex items-center gap-2 pl-1 pr-2 py-1 rounded-full hover:bg-surface-container transition-colors"
+          (click)="alternarPerfil()"
+          aria-label="Abrir menu de perfil"
+        >
+          <img
+            alt="Perfil"
+            class="w-8 h-8 rounded-full object-cover ring-2 ring-primary-fixed"
+            [src]="avatar"
+          />
+          <span class="hidden md:flex flex-col items-start leading-none">
+            <span class="font-label-md text-label-md text-on-surface">{{
+              auth.usuario()?.nombre
+            }}</span>
+            <span class="font-body-sm text-body-sm text-outline">{{
+              auth.usuario()?.rol
+            }}</span>
+          </span>
+          <span class="material-symbols-outlined text-base text-outline hidden md:inline">expand_more</span>
+        </button>
+
+        @if (perfilAbierto()) {
+          <div class="absolute right-0 top-full mt-2 w-60 bg-surface border border-hairline rounded-xl elev-3 overflow-hidden z-50">
+            <div class="px-space-md py-space-sm bg-surface-container border-b border-hairline">
+              <p class="font-label-md text-label-md text-on-surface truncate">
+                {{ auth.usuario()?.nombre }}
+              </p>
+              <p class="font-body-sm text-body-sm text-outline truncate">
+                {{ auth.usuario()?.correo }}
+              </p>
+            </div>
+            <div class="flex flex-col p-1">
+              @if (auth.esAdmin()) {
+                <button
+                  type="button"
+                  class="flex items-center gap-2 px-3 py-2 rounded-lg text-left text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-label-md text-label-md"
+                  (click)="irAdmin()"
+                >
+                  <span class="material-symbols-outlined text-lg">admin_panel_settings</span>
+                  Panel de administración
+                </button>
+              }
+              <button
+                type="button"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-left text-accent-alert hover:bg-error-container font-label-md text-label-md"
+                (click)="salir()"
+              >
+                <span class="material-symbols-outlined text-lg">logout</span>
+                Cerrar sesión
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <a routerLink="/login" class="btn-primario">Iniciar sesión</a>
+    }
+  </div>
+</header>
+
+<!-- Nav movil -->
+@if (menuAbierto()) {
+  <div class="fixed inset-0 top-16 z-30 bg-midnight/40 lg:hidden" (click)="cerrarMenu()"></div>
+  <nav
+    class="fixed top-16 left-0 right-0 z-40 bg-surface border-b border-hairline shadow-lg flex flex-col p-space-sm lg:hidden"
+  >
+    @for (enlace of visibles(); track enlace.path) {
+      <a
+        [routerLink]="enlace.path"
+        routerLinkActive="bg-primary-fixed text-primary font-semibold"
+        [routerLinkActiveOptions]="{ exact: enlace.exacto }"
+        class="flex items-center gap-2 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container font-label-lg text-label-lg"
+        (click)="cerrarMenu()"
+      >
+        <span class="material-symbols-outlined text-xl">{{ enlace.icono }}</span>
+        {{ enlace.etiqueta }}
+      </a>
+    }
+  </nav>
+}
+
+<!-- Contenido -->
+<main class="w-full pt-16 bg-canvas min-h-screen">
+  <router-outlet />
+</main>
+
+<!-- Footer -->
+<footer class="bg-midnight text-on-primary mt-space-xl">
+  <div class="max-w-7xl mx-auto px-space-lg py-space-lg flex flex-col gap-space-lg">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-space-md">
+      <div class="flex items-center gap-space-sm">
+        <img alt="Uniremington Logo" class="h-8 w-auto object-contain brightness-0 invert" [src]="logo" />
+        <div class="flex flex-col leading-none">
+          <span class="font-headline-sm text-headline-sm">Corporación Universitaria Remington</span>
+          <span class="font-label-sm text-label-sm text-primary-fixed mt-1"
+            >Campus Digital Informativo</span
+          >
+        </div>
+      </div>
+      <nav class="flex flex-wrap items-center gap-space-md">
+        <a routerLink="/" class="font-label-md text-label-md text-primary-fixed hover:underline">Cartelera</a>
+        @if (auth.autenticado()) {
+          <a routerLink="/notificaciones" class="font-label-md text-label-md text-primary-fixed hover:underline"
+            >Notificaciones</a
+          >
+        }
+        <a routerLink="/login" class="font-label-md text-label-md text-primary-fixed hover:underline"
+          >Acceso</a
+        >
+      </nav>
+    </div>
+    <div
+      class="pt-space-md border-t border-primary/30 flex flex-col sm:flex-row items-center justify-between gap-space-sm"
+    >
+      <p class="font-label-sm text-label-sm text-primary-fixed">
+        © Corporación Universitaria Remington. Vigilada Mineducación.
+      </p>
+      <p class="font-label-sm text-label-sm text-primary-fixed">
+        Soporte TI &nbsp;•&nbsp; Políticas de Privacidad &nbsp;•&nbsp; Mesa de Ayuda
+      </p>
+    </div>
+  </div>
+</footer>

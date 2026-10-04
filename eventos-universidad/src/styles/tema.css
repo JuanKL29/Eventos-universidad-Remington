@@ -1,0 +1,341 @@
+@import 'tailwindcss';
+
+/* ==========================================================================
+   Cartelera Uniremington - Social Feed
+   Tokens(base: Material 3) + capa de marca "Brand & Style"(v2)
+   ========================================================================== */
+
+@theme {
+  /* --------------------------------------------------------------------
+     CANVAS & SUPERFICIES  (Brand & Style > Canvas & Surface Tier)
+     -------------------------------------------------------------------- */
+  --color-background: #f0f4fa; /* Base Application Canvas */
+  --color-surface: #f0f4fa;
+  --color-surface-dim: #dcd9d9;
+  --color-surface-bright: #f0f4fa;
+  --color-surface-container-lowest: #ffffff; /* Cards */
+  --color-surface-container-low: #f0f4fa;
+  --color-surface-container: #eef2f8;
+  --color-surface-container-high: #e6ecf5;
+  --color-surface-container-highest: #dde5f0;
+  --color-surface-variant: #e2e8f0;
+
+  /* --------------------------------------------------------------------
+     NEUTRALES  (Brand & Style > Neutral Structure)
+     -------------------------------------------------------------------- */
+  --color-on-surface: #1a1a1a; /* Text Neutral */
+  --color-on-background: #1a1a1a;
+  --color-on-surface-variant: #64748b; /* Subdued Text */
+  --color-outline: #64748b;
+  --color-outline-variant: #e2e8f0; /* Structural Border */
+  --color-inverse-surface: #00183d;
+  --color-inverse-on-surface: #f3f0ef;
+  --color-surface-tint: #00467f;
+
+  /* --------------------------------------------------------------------
+     PRIMARIO  (Brand & Style > Primary Institutional #00467F)
+     -------------------------------------------------------------------- */
+  --color-primary: #00467f;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #00467f;
+  --color-on-primary-container: #d3e3fd;
+  --color-inverse-primary: #a3c9ff;
+  --color-primary-fixed: #d3e3fd; /* Tonal Tint */
+  --color-primary-fixed-dim: #a3c9ff;
+  --color-on-primary-fixed: #00183d;
+  --color-on-primary-fixed-variant: #044881;
+
+  /* --------------------------------------------------------------------
+     SECUNDARIO  (Secondary Midnight #00183D)
+     -------------------------------------------------------------------- */
+  --color-secondary: #00183d;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #bbcffd;
+  --color-on-secondary-container: #44587f;
+  --color-secondary-fixed: #d8e2ff;
+  --color-secondary-fixed-dim: #b3c6f4;
+  --color-on-secondary-fixed: #021a3f;
+  --color-on-secondary-fixed-variant: #33466d;
+
+  /* --------------------------------------------------------------------
+     ACENTO ALERTA  (Accent Alert #E50000 - solo avisos urgentes)
+     -------------------------------------------------------------------- */
+  --color-tertiary: #e50000;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #e50000;
+  --color-on-tertiary-container: #ffffff;
+  --color-tertiary-fixed: #ffe1e1;
+  --color-tertiary-fixed-dim: #ffb4a8;
+  --color-on-tertiary-fixed: #410000;
+  --color-on-tertiary-fixed-variant: #930100;
+
+  /* --------------------------------------------------------------------
+     ERROR / DESTRUCTIVO
+     -------------------------------------------------------------------- */
+  --color-error: #e50000;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffe1e1;
+  --color-on-error-container: #93000a;
+
+  /* --------------------------------------------------------------------
+     ALIAS DE MARCA (para legibilidad en el codigo)
+     -------------------------------------------------------------------- */
+  --color-midnight: #00183d; /* titulos de alta enfasis, app shell */
+  --color-accent-alert: #e50000; /* reservado: urgencias */
+  --color-canvas: #f0f4fa;
+  --color-hairline: #e2e8f0; /* bordes de 1px */
+
+  /* --------------------------------------------------------------------
+     RADIOS  (Brand & Style > Radius Assignments)
+     -------------------------------------------------------------------- */
+  --radius-sm: 0.25rem;
+  --radius-DEFAULT: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem; /* 16px - elementos interactivos, imagenes */
+  --radius-xl: 1.5rem; /* 24px - cards y superficies principales */
+  --radius-full: 9999px;
+
+  /* --------------------------------------------------------------------
+     ESPACIADO
+     -------------------------------------------------------------------- */
+  --spacing-gutter: 1rem;
+  --spacing-gutter-mobile: 0.75rem;
+  --spacing-margin: 1.5rem;
+  --spacing-margin-mobile: 1rem;
+  --spacing-space-xs: 0.25rem;
+  --spacing-space-sm: 0.5rem;
+  --spacing-space-md: 1rem;
+  --spacing-space-lg: 1.5rem;
+  --spacing-space-xl: 2rem;
+
+  /* --------------------------------------------------------------------
+     TIPOGRAFIA (Inter)
+     -------------------------------------------------------------------- */
+  --font-display-lg: 'Inter';
+  --font-headline-lg: 'Inter';
+  --font-headline-md: 'Inter';
+  --font-headline-sm: 'Inter';
+  --font-body-lg: 'Inter';
+  --font-body-md: 'Inter';
+  --font-body-sm: 'Inter';
+  --font-label-lg: 'Inter';
+  --font-label-md: 'Inter';
+  --font-label-sm: 'Inter';
+
+  --text-display-lg: 32px;
+  --text-display-lg--line-height: 40px;
+  --text-display-lg--letter-spacing: -0.02em;
+  --text-display-lg--font-weight: 700;
+
+  --text-headline-lg: 24px;
+  --text-headline-lg--line-height: 32px;
+  --text-headline-lg--letter-spacing: -0.015em;
+  --text-headline-lg--font-weight: 600;
+
+  --text-headline-md: 20px;
+  --text-headline-md--line-height: 28px;
+  --text-headline-md--letter-spacing: -0.01em;
+  --text-headline-md--font-weight: 600;
+
+  --text-headline-sm: 16px;
+  --text-headline-sm--line-height: 24px;
+  --text-headline-sm--letter-spacing: 0;
+  --text-headline-sm--font-weight: 600;
+
+  --text-body-lg: 16px;
+  --text-body-lg--line-height: 26px;
+  --text-body-lg--letter-spacing: -0.005em;
+  --text-body-lg--font-weight: 400;
+
+  --text-body-md: 14px;
+  --text-body-md--line-height: 22px;
+  --text-body-md--letter-spacing: 0;
+  --text-body-md--font-weight: 400;
+
+  --text-body-sm: 12px;
+  --text-body-sm--line-height: 18px;
+  --text-body-sm--letter-spacing: 0.01em;
+  --text-body-sm--font-weight: 400;
+
+  --text-label-lg: 14px;
+  --text-label-lg--line-height: 20px;
+  --text-label-lg--letter-spacing: 0.01em;
+  --text-label-lg--font-weight: 600;
+
+  --text-label-md: 12px;
+  --text-label-md--line-height: 16px;
+  --text-label-md--letter-spacing: 0.02em;
+  --text-label-md--font-weight: 600;
+
+  --text-label-sm: 11px;
+  --text-label-sm--line-height: 14px;
+  --text-label-sm--letter-spacing: 0.03em;
+  --text-label-sm--font-weight: 500;
+
+  /* --------------------------------------------------------------------
+     ELEVACION  (Brand & Style > Elevation & Depth)
+     -------------------------------------------------------------------- */
+  --shadow-0: none;
+  --shadow-1: 0 1px 3px rgba(0, 24, 61, 0.04); /* cards + top bar */
+  --shadow-2: 0 4px 12px rgba(0, 24, 61, 0.06); /* hover */
+  --shadow-3: 0 12px 32px rgba(0, 24, 61, 0.08); /* modales */
+  --shadow-DEFAULT: 0 1px 3px rgba(0, 24, 61, 0.04);
+  --shadow-sm: 0 1px 3px rgba(0, 24, 61, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 24, 61, 0.06);
+  --shadow-lg: 0 12px 32px rgba(0, 24, 61, 0.08);
+  --shadow-xl: 0 12px 32px rgba(0, 24, 61, 0.08);
+}
+
+@layer base {
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background-color: var(--color-canvas);
+    color: var(--color-on-surface);
+    overscroll-behavior: none;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  main > :first-child {
+    margin-top: 0 !important;
+  }
+
+  main > :last-child {
+    margin-bottom: 0 !important;
+  }
+
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Foco visible coherente en toda la app */
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 0;
+  }
+
+  .material-symbols-outlined {
+    font-variation-settings:
+      'FILL' 0,
+      'wght' 400,
+      'GRAD' 0,
+      'opsz' 24;
+    line-height: 1;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Iconos "rellenos" (bookmark, favorite) */
+  .material-symbols-outlined.fill-1 {
+    font-variation-settings:
+      'FILL' 1,
+      'wght' 400,
+      'GRAD' 0,
+      'opsz' 24;
+  }
+}
+
+@layer components {
+  /* --- Elevacion 1: Feed Card / Top Bar --- */
+  .elev-1 {
+    background-color: var(--color-surface-container-lowest);
+    border: 1px solid var(--color-hairline);
+    box-shadow: var(--shadow-1);
+  }
+
+  /* --- Elevacion 2: hover sobre card --- */
+  .elev-2-hover {
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease;
+
+    &:hover {
+      border-color: var(--color-primary-fixed);
+      box-shadow: var(--shadow-2);
+    }
+  }
+
+  /* --- Elevacion 3: modales y composer --- */
+  .elev-3 {
+    background-color: var(--color-surface-container-lowest);
+    border: 1px solid var(--color-hairline);
+    box-shadow: var(--shadow-3);
+  }
+
+  /* --- Velo de fondo para modales --- */
+  .velo-modal {
+    background-color: rgba(0, 24, 61, 0.25);
+    backdrop-filter: blur(4px);
+  }
+
+  /* --- Chip de facultad / programa --- */
+  .chip-facultad {
+    @apply rounded-full px-3 py-1 font-label-sm text-label-sm;
+    background-color: var(--color-primary-fixed);
+    color: var(--color-primary);
+  }
+
+  /* --- Chip de alerta institucional --- */
+  .chip-alerta {
+    @apply rounded-full px-3 py-1 font-label-sm text-label-sm font-bold;
+    background-color: rgba(229, 0, 0, 0.08);
+    color: var(--color-accent-alert);
+  }
+
+  /* --- Chip de filtro interactivo --- */
+  .chip-filtro {
+    @apply rounded-full px-3 py-1.5 font-label-sm text-label-sm transition-colors;
+    background-color: var(--color-surface-container-lowest);
+    border: 1px solid var(--color-hairline);
+    color: var(--color-on-surface-variant);
+
+    &:hover {
+      background-color: var(--color-surface-container-low);
+    }
+  }
+
+  .chip-filtro--activo {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--color-on-primary);
+  }
+
+  /* --- Boton primario institucional --- */
+  .btn-primario {
+    @apply rounded-full px-4 py-2 font-label-lg text-label-lg transition-colors;
+    background-color: var(--color-primary);
+    color: var(--color-on-primary);
+
+    &:hover:not(:disabled) {
+      background-color: var(--color-secondary);
+    }
+  }
+
+  /* --- Boton secundario / ghost --- */
+  .btn-ghost {
+    @apply rounded-full px-4 py-2 font-label-lg text-label-lg transition-colors;
+    color: var(--color-primary);
+
+    &:hover:not(:disabled) {
+      background-color: var(--color-canvas);
+    }
+  }
+
+  /* --- Boton alerta / destructivo --- */
+  .btn-alerta {
+    @apply rounded-full px-4 py-2 font-label-lg text-label-lg transition-colors;
+    background-color: var(--color-accent-alert);
+    color: #fff;
+
+    &:hover:not(:disabled) {
+      filter: brightness(0.92);
+    }
+  }
+}

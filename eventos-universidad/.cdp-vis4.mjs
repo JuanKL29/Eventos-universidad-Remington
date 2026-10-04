@@ -1,0 +1,21 @@
+﻿const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const t=(await (await fetch("http://127.0.0.1:9333/json/list")).json()).find(x=>x.type==="page");
+const ws=new WebSocket(t.webSocketDebuggerUrl);
+await new Promise(r=>ws.addEventListener("open",r));
+let id=0;const pend=new Map();
+ws.addEventListener("message",e=>{const m=JSON.parse(e.data);if(m.id&&pend.has(m.id)){pend.get(m.id)(m.result);pend.delete(m.id);}});
+const send=(m,p={})=>new Promise(res=>{const i=++id;pend.set(i,res);ws.send(JSON.stringify({id:i,method:m,params:p}));});
+const js=async e=>{const r=await send("Runtime.evaluate",{expression:e,awaitPromise:true,returnByValue:true});if(r.exceptionDetails)return 'ERR';return r.result.value;};
+await send("Runtime.enable");await send("Page.enable");
+const goto=async u=>{await send("Page.navigate",{url:u});await sleep(4000);};
+const fill=(sel,v)=>js(`(()=>{const el=document.querySelector(${JSON.stringify(sel)});if(!el)return 'NO';const P=el.tagName==='SELECT'?HTMLSelectElement.prototype:el.tagName==='TEXTAREA'?HTMLTextAreaElement.prototype:HTMLInputElement.prototype;Object.getOwnPropertyDescriptor(P,'value').set.call(el,${JSON.stringify(v)});['input','change','blur'].forEach(e=>el.dispatchEvent(new Event(e,{bubbles:true})));return 'ok';})()`);
+const login=async(correo)=>{await goto("http://localhost:4300/login");await fill("input[name=username]",correo);await fill("input[name=password]","Uniremington2026");await js(`document.querySelector('#submitButton').click();1`);await sleep(5000);};
+const ver=()=>js(`(()=>{const t=document.body.innerText;const L=['Estado borrador para prueba'];return L.filter(x=>t.includes(x)).length>0?'VE BORRADOR':'NO lo ve';})()`);
+
+console.log("=== admin primero ===");
+await login("admin@uniremington.edu.co");
+await goto("http://localhost:4300/");
+console.log("  / ->", await ver());
+await goto("http://localhost:4300/admin/publicaciones");
+console.log("  /admin/publicaciones ->", await ver());
+process.exit(0);

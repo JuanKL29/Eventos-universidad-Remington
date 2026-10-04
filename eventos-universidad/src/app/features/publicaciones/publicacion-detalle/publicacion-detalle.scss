@@ -1,0 +1,54 @@
+:host {
+  display: block;
+}
+
+/* Contenido enriquecido vindo del editor de la vista de administracion.
+   El mock tambien guarda texto plano, que se muestra sin etiquetas. */
+.cuerpo-publicacion p {
+  margin-bottom: var(--spacing-space-md);
+}
+
+.cuerpo-publicacion p:last-child {
+  margin-bottom: 0;
+}
+
+.cuerpo-publicacion b,
+.cuerpo-publicacion strong {
+  font-weight: 700;
+}
+
+.cuerpo-publicacion i,
+.cuerpo-publicacion em {
+  font-style: italic;
+}
+
+.cuerpo-publicacion u {
+  text-decoration: underline;
+}
+
+.cuerpo-publicacion a {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+
+.cuerpo-publicacion ul,
+.cuerpo-publicacion ol {
+  padding-left: var(--spacing-space-lg);
+  margin-bottom: var(--spacing-space-md);
+  list-style-position: outside;
+}
+
+.cuerpo-publicacion ul {
+  list-style-type: disc;
+}
+
+.cuerpo-publicacion ol {
+  list-style-type: decimal;
+}
+
+.cuerpo-publicacion blockquote {
+  border-left: 3px solid var(--color-primary);
+  padding-left: var(--spacing-space-md);
+  margin: var(--spacing-space-md) 0;
+  color: var(--color-on-surface-variant);
+}

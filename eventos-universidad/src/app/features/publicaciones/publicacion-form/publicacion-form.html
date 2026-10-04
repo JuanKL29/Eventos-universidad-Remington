@@ -1,0 +1,581 @@
+<!--
+  Diseno original: "Administracion - Cartelera Uniremington" (crear/editar/eliminar).
+  El switcher "Crear Nueva / Simular Edicion / Probar Borrado" del HTML es
+  scaffolding de demo: aqui el modo lo determina la ruta (/nueva o /:id/editar)
+  y el borrado solo existe en modo edicion, contra una publicacion real.
+  "Alcance de visualizacion" (campus/pregrado/docentes) se omite porque el modelo
+  no tiene ese campo y no conviene inventarlo.
+-->
+@if (noEncontrada()) {
+  <section class="w-full max-w-2xl mx-auto flex flex-col items-center gap-space-md py-space-xl">
+    <span class="material-symbols-outlined text-5xl text-outline">search_off</span>
+    <h1 class="font-headline-lg text-headline-lg text-primary">Publicación no encontrada</h1>
+    <p class="font-body-md text-body-md text-on-surface-variant text-center">
+      El registro que intentas editar ya no existe o fue eliminado del sistema.
+    </p>
+    <a routerLink="/admin/publicaciones" class="btn-primario inline-flex items-center gap-space-xs">
+      <span class="material-symbols-outlined text-lg">arrow_back</span>
+      Volver a la gestión
+    </a>
+  </section>
+} @else {
+  <section class="flex flex-col gap-space-lg pb-16">
+    <!-- ================================================= BREADCRUMB Y CONTEXTO -->
+    <header
+      class="flex flex-col md:flex-row md:items-center justify-between gap-space-md bg-surface-container-lowest border border-hairline rounded-xl p-space-lg elev-1"
+    >
+      <div class="flex flex-col gap-1">
+        <div class="flex items-center gap-2 font-label-sm text-label-sm text-outline">
+          <a routerLink="/admin/publicaciones" class="hover:text-primary transition-colors">Cartelera</a>
+          <span class="material-symbols-outlined text-xs">chevron_right</span>
+          <a routerLink="/admin/publicaciones" class="hover:text-primary transition-colors">
+            Publicaciones
+          </a>
+          <span class="material-symbols-outlined text-xs">chevron_right</span>
+          <span class="text-primary font-semibold">
+            {{ esEdicion() ? 'Editar Publicación #' + publicacion()?.id : 'Crear Registro' }}
+          </span>
+        </div>
+
+        <div class="flex items-center gap-space-sm mt-1">
+          <h1 class="font-display-lg text-display-lg text-primary tracking-tight">
+            {{ tituloPagina() }}
+          </h1>
+          @if (esEdicion()) {
+            <div
+              class="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm"
+            >
+              <span class="material-symbols-outlined text-xs">edit_note</span>
+              Modo Edición: Modificar publicación existente
+            </div>
+          }
+        </div>
+
+        <p class="font-body-md text-body-md text-on-surface-variant max-w-2xl">
+          Completa los campos institucionales para distribuir noticias, avisos o convocatorias en la
+          red unificada de Uniremington.
+        </p>
+      </div>
+    </header>
+
+    <!-- ================================================== GRID EDITORIAL 8 / 4 -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+      <!-- ============================================ COLUMNA PRINCIPAL (8 cols) -->
+      <div class="lg:col-span-8 flex flex-col gap-space-lg">
+        <form
+          class="bg-surface-container-lowest border border-hairline rounded-xl p-space-xl flex flex-col gap-space-lg elev-1"
+          [formGroup]="formulario"
+          (ngSubmit)="guardar()"
+        >
+          <!-- Titulo -->
+          <div class="flex flex-col gap-space-xs">
+            <div class="flex justify-between items-center">
+              <label for="post-title" class="font-label-lg text-label-lg text-on-surface">
+                Título de la publicación <span class="text-tertiary">*</span>
+              </label>
+              <span class="font-label-sm text-label-sm text-outline">
+                {{ contadorTitulo() }} / {{ LIMITE_TITULO }}
+              </span>
+            </div>
+            <input
+              id="post-title"
+              type="text"
+              formControlName="titulo"
+              [maxlength]="LIMITE_TITULO"
+              placeholder="Ej: Semana Universitaria Remington 2025: Innovación, Cultura y Deporte..."
+              class="w-full px-space-md py-3 rounded-lg bg-surface-container-low text-on-surface placeholder:text-outline font-body-lg text-body-lg focus:outline-none focus:ring-2 focus:ring-primary transition-all"
+              [class.border-accent-alert]="campoInvalido('titulo')"
+            />
+            <span class="font-body-sm text-body-sm text-outline">
+              Procura un título descriptivo y conciso que capture el interés de los estudiantes y
+              docentes.
+            </span>
+          </div>
+
+          <!-- Categoria y Fecha -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+            <div class="flex flex-col gap-space-xs">
+              <label for="post-categoria" class="font-label-lg text-label-lg text-on-surface">
+                Categoría institucional <span class="text-tertiary">*</span>
+              </label>
+              <div class="relative">
+                <select
+                  id="post-categoria"
+                  formControlName="tipo"
+                  class="w-full appearance-none px-space-md py-3 pr-10 rounded-lg bg-surface-container-low text-on-surface font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer transition-all"
+                >
+                  @for (t of tipos; track t.valor) {
+                    <option [value]="t.valor">{{ t.etiqueta }}</option>
+                  }
+                </select>
+                <span
+                  class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant"
+                  >arrow_drop_down</span
+                >
+              </div>
+            </div>
+
+            <div class="flex flex-col gap-space-xs">
+              <label for="post-date" class="font-label-lg text-label-lg text-on-surface">
+                Fecha de publicación / Vigencia <span class="text-tertiary">*</span>
+              </label>
+              <div class="relative">
+                <input
+                  id="post-date"
+                  type="date"
+                  formControlName="fechaInicio"
+                  class="w-full px-space-md py-3 rounded-lg bg-surface-container-low text-on-surface font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary transition-all"
+                  [class.border-accent-alert]="campoInvalido('fechaInicio')"
+                />
+                <span
+                  class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant text-xl"
+                  >calendar_today</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- Resumen: texto plano que alimenta las tarjetas de la cartelera -->
+          <div class="flex flex-col gap-space-xs">
+            <label for="post-resumen" class="font-label-lg text-label-lg text-on-surface">
+              Resumen <span class="text-tertiary">*</span>
+            </label>
+            <textarea
+              id="post-resumen"
+              formControlName="resumen"
+              rows="2"
+              placeholder="Dos líneas que se muestran en la tarjeta de la cartelera"
+              class="w-full px-space-md py-3 rounded-lg bg-surface-container-low text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary resize-y transition-all"
+              [class.border-accent-alert]="campoInvalido('resumen')"
+            ></textarea>
+          </div>
+
+          <!-- ================================================ EDITOR ENRIQUECIDO -->
+          <div class="flex flex-col gap-space-xs">
+            <label class="font-label-lg text-label-lg text-on-surface">
+              Contenido / Cuerpo de la publicación <span class="text-tertiary">*</span>
+            </label>
+
+            <div class="rounded-xl bg-surface-container-low overflow-hidden border border-hairline">
+              <!-- Barra de herramientas -->
+              <div
+                class="flex items-center gap-1 p-2 bg-surface-container-high border-b border-hairline text-on-surface-variant flex-wrap"
+              >
+                <button
+                  type="button"
+                  class="p-1.5 rounded hover:bg-surface-container-lowest hover:text-on-surface transition-colors"
+                  title="Negrita"
+                  aria-label="Negrita"
+                  (click)="aplicarFormato('bold')"
+                >
+                  <span class="material-symbols-outlined text-xl">format_bold</span>
+                </button>
+                <button
+                  type="button"
+                  class="p-1.5 rounded hover:bg-surface-container-lowest hover:text-on-surface transition-colors"
+                  title="Cursiva"
+                  aria-label="Cursiva"
+                  (click)="aplicarFormato('italic')"
+                >
+                  <span class="material-symbols-outlined text-xl">format_italic</span>
+                </button>
+                <button
+                  type="button"
+                  class="p-1.5 rounded hover:bg-surface-container-lowest hover:text-on-surface transition-colors"
+                  title="Subrayado"
+                  aria-label="Subrayado"
+                  (click)="aplicarFormato('underline')"
+                >
+                  <span class="material-symbols-outlined text-xl">format_underlined</span>
+                </button>
+                <div class="w-px h-5 bg-outline-variant mx-1"></div>
+                <button
+                  type="button"
+                  class="p-1.5 rounded hover:bg-surface-container-lowest hover:text-on-surface transition-colors"
+                  title="Lista de viñetas"
+                  aria-label="Lista de viñetas"
+                  (click)="aplicarFormato('insertUnorderedList')"
+                >
+                  <span class="material-symbols-outlined text-xl">format_list_bulleted</span>
+                </button>
+                <button
+                  type="button"
+                  class="p-1.5 rounded hover:bg-surface-container-lowest hover:text-on-surface transition-colors"
+                  title="Lista numerada"
+                  aria-label="Lista numerada"
+                  (click)="aplicarFormato('insertOrderedList')"
+                >
+                  <span class="material-symbols-outlined text-xl">format_list_numbered</span>
+                </button>
+                <button
+                  type="button"
+                  class="p-1.5 rounded hover:bg-surface-container-lowest hover:text-on-surface transition-colors"
+                  title="Cita"
+                  aria-label="Cita"
+                  (click)="aplicarFormato('formatBlock', 'blockquote')"
+                >
+                  <span class="material-symbols-outlined text-xl">format_quote</span>
+                </button>
+                <div class="w-px h-5 bg-outline-variant mx-1"></div>
+                <button
+                  type="button"
+                  class="p-1.5 rounded hover:bg-surface-container-lowest hover:text-on-surface transition-colors"
+                  title="Insertar enlace"
+                  aria-label="Insertar enlace"
+                  (click)="crearEnlace()"
+                >
+                  <span class="material-symbols-outlined text-xl">link</span>
+                </button>
+              </div>
+
+              <!-- Area de escritura -->
+              <div
+                #editor
+                contenteditable="true"
+                role="textbox"
+                aria-multiline="true"
+                aria-label="Contenido de la publicación"
+                class="editor p-space-md min-h-[220px] font-body-lg text-body-lg text-on-surface bg-surface-container-lowest focus:outline-none"
+              ></div>
+            </div>
+          </div>
+
+          <!-- ================================================ DATOS DE ACTIVIDAD -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+            <div class="flex flex-col gap-space-xs">
+              <label for="post-lugar" class="font-label-lg text-label-lg text-on-surface">Lugar</label>
+              <input
+                id="post-lugar"
+                type="text"
+                formControlName="lugar"
+                placeholder="Auditorio, sede o modalidad"
+                class="w-full px-space-md py-3 rounded-lg bg-surface-container-low text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary transition-all"
+              />
+            </div>
+
+            <div class="flex flex-col gap-space-xs">
+              <label for="post-hora" class="font-label-lg text-label-lg text-on-surface">Hora</label>
+              <input
+                id="post-hora"
+                type="time"
+                formControlName="hora"
+                class="w-full px-space-md py-3 rounded-lg bg-surface-container-low text-on-surface font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary transition-all"
+              />
+            </div>
+
+            <div class="flex flex-col gap-space-xs">
+              <label
+                for="post-organizador"
+                class="font-label-lg text-label-lg text-on-surface"
+              >
+                Organizador
+              </label>
+              <input
+                id="post-organizador"
+                type="text"
+                formControlName="organizador"
+                placeholder="Dependencia o unidad"
+                class="w-full px-space-md py-3 rounded-lg bg-surface-container-low text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary transition-all"
+              />
+            </div>
+
+            <div class="flex flex-col gap-space-xs">
+              <label
+                for="post-etiquetas"
+                class="font-label-lg text-label-lg text-on-surface"
+              >
+                Etiquetas
+              </label>
+              <input
+                id="post-etiquetas"
+                type="text"
+                formControlName="etiquetas"
+                placeholder="Separadas por coma"
+                class="w-full px-space-md py-3 rounded-lg bg-surface-container-low text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary transition-all"
+              />
+            </div>
+          </div>
+
+          <!-- ==================================================== ARCHIVOS ADJUNTOS -->
+          <div class="flex flex-col gap-space-sm">
+            <div class="flex justify-between items-center">
+              <label class="font-label-lg text-label-lg text-on-surface">
+                Documentos y anexos oficiales
+              </label>
+              <span class="font-label-sm text-label-sm text-outline">PDF, DOCX hasta 25MB</span>
+            </div>
+
+            <label
+              class="p-space-md rounded-xl bg-surface-container-low flex flex-col items-center justify-center text-center gap-2 hover:bg-surface-container transition-colors cursor-pointer group"
+            >
+              <div
+                class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-primary group-hover:scale-105 transition-transform"
+              >
+                <span class="material-symbols-outlined">upload_file</span>
+              </div>
+              <span>
+                <span class="font-label-md text-label-md text-primary">Haz clic para adjuntar archivo</span>
+                <span class="font-body-sm text-body-sm text-outline"> o arrastra el documento aquí</span>
+              </span>
+              <input type="file" multiple class="hidden" (change)="agregarAdjuntos($event)" />
+            </label>
+
+            @if (adjuntos().length) {
+              <div class="flex flex-col gap-2 mt-1">
+                @for (archivo of adjuntos(); track $index) {
+                  <div
+                    class="flex items-center justify-between p-3 rounded-lg bg-surface-container-low transition-all"
+                  >
+                    <div class="flex items-center gap-space-sm min-w-0">
+                      <div
+                        class="w-8 h-8 rounded bg-tertiary-fixed flex items-center justify-center text-tertiary-container shrink-0"
+                      >
+                        <span class="material-symbols-outlined text-xl">description</span>
+                      </div>
+                      <div class="flex flex-col min-w-0">
+                        <span class="font-label-md text-label-md text-on-surface truncate">
+                          {{ archivo.nombre }}
+                        </span>
+                        <span class="font-body-sm text-body-sm text-outline">
+                          {{ tamanoLegible(archivo.tamanoKb) }}
+                        </span>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      class="p-1 rounded-full text-outline hover:text-tertiary hover:bg-surface-container-high transition-colors"
+                      [attr.aria-label]="'Quitar ' + archivo.nombre"
+                      title="Quitar archivo"
+                      (click)="quitarAdjunto($index)"
+                    >
+                      <span class="material-symbols-outlined text-lg">close</span>
+                    </button>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+
+          <!-- ================================================ BOTONES DE ACCION -->
+          <div
+            class="flex flex-col sm:flex-row items-center justify-between gap-space-md pt-space-lg border-t border-hairline"
+          >
+            @if (esEdicion()) {
+              <button
+                type="button"
+                class="hidden sm:flex items-center gap-2 px-space-md py-2.5 rounded-full text-tertiary hover:bg-tertiary-fixed transition-colors font-label-md text-label-md"
+                (click)="abrirBorrado()"
+              >
+                <span class="material-symbols-outlined text-lg">delete_forever</span>
+                <span>Eliminar publicación</span>
+              </button>
+            } @else {
+              <span class="hidden sm:block"></span>
+            }
+
+            <div class="flex items-center gap-space-sm w-full sm:w-auto justify-end">
+              <button type="button" class="btn-ghost px-6 py-2.5" [disabled]="guardando()" (click)="cancelar()">
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                class="px-8 py-2.5 rounded-full bg-primary-container text-on-primary font-label-lg text-label-lg hover:bg-primary elev-1 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                [disabled]="guardando()"
+              >
+                <span class="material-symbols-outlined text-lg">send</span>
+                {{ guardando() ? 'Guardando...' : textoBoton() }}
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- ==================================================== COLUMNA LATERAL (4) -->
+      <div class="lg:col-span-4 flex flex-col gap-space-lg">
+        <!-- Estado -->
+        <div
+          class="bg-surface-container-lowest border border-hairline rounded-xl p-space-lg elev-1 flex flex-col gap-space-md"
+        >
+          <h2 class="font-headline-sm text-headline-sm text-on-surface flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary text-xl">tune</span>
+            Publicación y Difusión
+          </h2>
+
+          <div class="flex flex-col gap-space-xs">
+            <label class="font-label-md text-label-md text-on-surface">Estado del contenido</label>
+            <div class="flex flex-col gap-2">
+              @for (opcion of estados; track opcion.valor) {
+                <label
+                  class="flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors"
+                  [class.bg-primary-fixed]="formulario.get('estado')?.value === opcion.valor"
+                  [class.bg-surface-container-low]="formulario.get('estado')?.value !== opcion.valor"
+                >
+                  <input
+                    type="radio"
+                    formControlName="estado"
+                    [value]="opcion.valor"
+                    class="text-primary focus:ring-primary w-4 h-4 shrink-0"
+                  />
+                  <div class="flex flex-col">
+                    <span class="font-label-md text-label-md text-on-surface">{{ opcion.titulo }}</span>
+                    <span class="font-body-sm text-body-sm text-outline">{{ opcion.descripcion }}</span>
+                  </div>
+                </label>
+              }
+            </div>
+          </div>
+
+          <label class="flex items-center gap-space-sm pt-2 cursor-pointer">
+            <input
+              type="checkbox"
+              formControlName="destacado"
+              class="w-4 h-4 accent-primary cursor-pointer shrink-0"
+            />
+            <span class="font-body-md text-body-md text-on-surface">Marcar como destacado</span>
+          </label>
+        </div>
+
+        <!-- Imagen destacada -->
+        <div
+          class="bg-surface-container-lowest border border-hairline rounded-xl p-space-lg elev-1 flex flex-col gap-space-md"
+        >
+          <div class="flex justify-between items-center">
+            <h2 class="font-headline-sm text-headline-sm text-on-surface flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary text-xl">image</span>
+              Imagen Destacada
+            </h2>
+            <span class="font-label-sm text-label-sm text-outline">16:9 recomendado</span>
+          </div>
+
+          <div
+            class="relative group rounded-xl overflow-hidden bg-surface-container-low aspect-video flex flex-col items-center justify-center"
+          >
+            @if (imagenUrl()) {
+              <img
+                class="w-full h-full object-cover"
+                [src]="imagenUrl()!"
+                alt="Previsualización de la imagen destacada"
+              />
+              <div
+                class="absolute inset-0 bg-primary/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2"
+              >
+                <label
+                  class="px-4 py-2 rounded-full bg-surface-container-lowest text-on-surface font-label-md text-label-md elev-1 flex items-center gap-1.5 cursor-pointer"
+                >
+                  <span class="material-symbols-outlined text-base">photo_camera</span>
+                  Examinar imagen
+                  <input type="file" accept="image/*" class="hidden" (change)="elegirImagen($event)" />
+                </label>
+                <button
+                  type="button"
+                  class="p-2 rounded-full bg-surface-container-lowest text-tertiary elev-1 transition-colors"
+                  title="Eliminar foto"
+                  aria-label="Eliminar foto"
+                  (click)="quitarImagen()"
+                >
+                  <span class="material-symbols-outlined text-base">delete</span>
+                </button>
+              </div>
+            } @else {
+              <span class="material-symbols-outlined text-3xl text-outline">add_photo_alternate</span>
+              <span class="font-body-sm text-body-sm text-outline">Sin imagen</span>
+            }
+          </div>
+
+          <label
+            class="w-full py-2.5 px-4 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-md text-label-md transition-colors flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <span class="material-symbols-outlined text-lg">add_photo_alternate</span>
+            Examinar imagen desde el equipo
+            <input type="file" accept="image/*" class="hidden" (change)="elegirImagen($event)" />
+          </label>
+          <span class="font-body-sm text-body-sm text-outline text-center">
+            Formatos soportados: JPG, PNG o WEBP (Máx. 5MB)
+          </span>
+        </div>
+
+        <!-- Auditoria -->
+        <div class="bg-surface-container-low border border-hairline rounded-xl p-space-md flex items-start gap-space-sm">
+          <span class="material-symbols-outlined text-primary text-xl mt-0.5">verified_user</span>
+          <div class="flex flex-col gap-1">
+            <span class="font-label-md text-label-md text-on-surface">
+              Control de Auditoría Institucional
+            </span>
+            @if (esEdicion() && publicacion(); as p) {
+              <span class="font-body-sm text-body-sm text-on-surface-variant">
+                Creada por {{ p.creadoPor }} el {{ fechaLarga(p.creadoEn) }}.
+              </span>
+              <span class="font-body-sm text-body-sm text-outline">
+                Última edición: {{ fechaLarga(p.actualizadoEn) }}
+              </span>
+            } @else {
+              <span class="font-body-sm text-body-sm text-on-surface-variant">
+                Todas las publicaciones emitidas quedan registradas con la firma de tu usuario
+                institucional para fines de archivo curricular.
+              </span>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================ MODAL DE CONFIRMAR BORRADO -->
+    @if (modalBorrado() && publicacion(); as objetivo) {
+      <div class="velo-modal fixed inset-0 z-50 flex items-center justify-center p-4" role="alertdialog" aria-modal="true" aria-labelledby="titulo-borrado">
+        <div class="velo-modal-fondo absolute inset-0" (click)="cerrarBorrado()"></div>
+
+        <div
+          class="relative bg-surface-container-lowest border border-hairline rounded-xl w-full max-w-lg p-space-xl flex flex-col gap-space-lg elev-3"
+        >
+          <div class="flex items-center gap-space-md">
+            <div
+              class="w-12 h-12 rounded-full bg-tertiary-fixed text-tertiary-container flex items-center justify-center shrink-0"
+            >
+              <span class="material-symbols-outlined text-3xl">warning</span>
+            </div>
+            <div class="flex flex-col">
+              <span
+                class="font-label-sm text-label-sm text-tertiary-container uppercase tracking-wider font-bold"
+              >
+                Acción Irreversible
+              </span>
+              <h3
+                id="titulo-borrado"
+                class="font-headline-md text-headline-md text-on-surface leading-tight"
+              >
+                ¿Estás seguro de que deseas eliminar esta publicación?
+              </h3>
+            </div>
+          </div>
+
+          <div class="p-space-md rounded-lg bg-surface-container-low flex flex-col gap-1">
+            <p class="font-body-md text-body-md text-on-surface">
+              La publicación
+              <span class="font-semibold text-primary">"{{ objetivo.titulo }}"</span> será retirada
+              permanentemente de la cartelera de todos los usuarios.
+            </p>
+            <span class="font-body-sm text-body-sm text-outline mt-1">
+              Esta acción removerá los comentarios asociados, adjuntos vinculados y las métricas
+              de alcance en la comunidad universitaria.
+            </span>
+          </div>
+
+          <div class="flex items-center justify-end gap-space-sm pt-2">
+            <button type="button" class="btn-ghost px-5 py-2.5" [disabled]="eliminando()" (click)="cerrarBorrado()">
+              Cancelar
+            </button>
+            <button
+              type="button"
+              class="px-6 py-2.5 rounded-full bg-tertiary-container text-on-tertiary font-label-lg text-label-lg transition-colors flex items-center gap-1.5 disabled:opacity-50"
+              [disabled]="eliminando()"
+              (click)="confirmarBorrado()"
+            >
+              <span class="material-symbols-outlined text-base">delete</span>
+              {{ eliminando() ? 'Eliminando...' : 'Eliminar permanentemente' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+  </section>
+}

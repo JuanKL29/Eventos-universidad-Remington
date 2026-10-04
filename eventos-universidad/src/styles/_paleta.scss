@@ -1,0 +1,82 @@
+// Paleta de marca - Cartelera Uniremington Social Feed
+// Fuente unica de verdad: src/styles/tema.css (@theme de Tailwind v4).
+// Estas variables SCSS existen solo para uso interno en componentes.
+
+// Marca
+$primary: #00467f; // Primary Institutional
+$midnight: #00183d; // Secondary Midnight
+$accent-alert: #e50000; // Accent Alert (solo urgencias)
+
+// Canvas & superficies
+$canvas: #f0f4fa; // Base Application Canvas
+$card: #ffffff; // Component Container / Cards
+$tint: #d3e3fd; // Tonal Tint / Interactive Muted
+
+// Neutros
+$texto: #1a1a1a; // Text Neutral
+$texto-suave: #64748b; // Subdued Text
+$borde: #e2e8f0; // Structural Border
+
+// Elevacion
+$sombra-1: 0 1px 3px rgba(0, 24, 61, 0.04);
+$sombra-2: 0 4px 12px rgba(0, 24, 61, 0.06);
+$sombra-3: 0 12px 32px rgba(0, 24, 61, 0.08);
+$velo: rgba(0, 24, 61, 0.25);
+
+// Radios
+$radio-sm: 0.25rem;
+$radio: 0.5rem;
+$radio-md: 0.75rem;
+$radio-lg: 1rem;
+$radio-xl: 1.5rem;
+
+// Mapa tipo de publicacion -> icono Material Symbols
+$mapa-iconos: (
+  'evento': 'event',
+  'convocatoria': 'campaign',
+  'aviso': 'campaign',
+  'noticia': 'newspaper',
+  'institucional': 'domain',
+);
+
+// Mapa tipo -> clases de badge
+$mapa-badge: (
+  'evento': 'bg-primary-fixed text-primary',
+  'convocatoria': 'bg-primary-fixed text-primary',
+  'aviso': 'chip-alerta',
+  'noticia': 'bg-surface-container text-on-surface-variant',
+  'institucional': 'bg-surface-container text-on-surface-variant',
+);
+
+// Mapa tipo -> clases de avatar
+$mapa-avatar: (
+  'evento': 'bg-primary-fixed text-primary',
+  'convocatoria': 'bg-primary-fixed text-primary',
+  'aviso': 'bg-tertiary-fixed text-accent-alert',
+  'noticia': 'bg-primary-fixed text-primary',
+  'institucional': 'bg-primary-fixed text-primary',
+);
+
+// Mapa estado -> clases de badge
+$mapa-estado: (
+  'borrador': 'bg-surface-container-high text-on-surface-variant',
+  'programada': 'bg-surface-container text-primary',
+  'publicada': 'bg-primary-fixed text-primary',
+  'archivada': 'bg-surface-container-high text-outline',
+);
+
+@function icono-tipo($tipo) {
+  @return map-get($mapa-iconos, $tipo);
+}
+
+@function badge-tipo($tipo) {
+  @return map-get($mapa-badge, $tipo);
+}
+
+@function avatar-tipo($tipo) {
+  @return map-get($mapa-avatar, $tipo);
+}
+
+@function badge-estado($estado) {
+  @return map-get($mapa-estado, $estado);
+}

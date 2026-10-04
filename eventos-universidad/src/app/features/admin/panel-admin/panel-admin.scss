@@ -1,0 +1,8 @@
+:host {
+  display: block;
+}
+
+/* El modal se posiciona con fixed; el host participates en el flujo normal. */
+.velo-modal-fondo {
+  background-color: rgb(0 24 61 / 0.5);
+}

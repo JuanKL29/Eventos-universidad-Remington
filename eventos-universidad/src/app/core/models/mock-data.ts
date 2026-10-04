@@ -1,0 +1,346 @@
+import { Publicacion } from './publicacion.model';
+import { Usuario } from './usuario.model';
+import { Notificacion, Recordatorio } from './notificacion.model';
+
+export const USUARIOS_MOCK: Usuario[] = [
+  {
+    id: 1,
+    nombre: 'Ana Restrepo',
+    correo: 'admin@uniremington.edu.co',
+    rol: 'administrador',
+    activo: true,
+    creadoEn: '2024-01-15T08:00:00',
+  },
+  {
+    id: 2,
+    nombre: 'Carlos Mejia',
+    correo: 'coordinacion@uniremington.edu.co',
+    rol: 'coordinador',
+    carrera: 'Ingenieria de Sistemas',
+    activo: true,
+    creadoEn: '2024-02-02T09:30:00',
+  },
+  {
+    id: 3,
+    nombre: 'Juan Pabon',
+    correo: 'juanpabon@uniremington.edu.co',
+    rol: 'docente',
+    carrera: 'Administracion de Empresas',
+    activo: true,
+    creadoEn: '2024-03-11T10:15:00',
+  },
+  {
+    id: 4,
+    nombre: 'Mateo Rios',
+    correo: 'mateo.rios@uniremington.edu.co',
+    rol: 'estudiante',
+    carrera: 'Ingenieria de Sistemas',
+    activo: true,
+    creadoEn: '2024-06-20T14:45:00',
+  },
+];
+
+export const PUBLICACIONES_MOCK: Publicacion[] = [
+  {
+    id: 1,
+    titulo:
+      'Semana Universitaria Remington 2025: Convocatoria abierta para ponencias y muestras artisticas',
+    slug: 'semana-universitaria-remington-2025',
+    resumen:
+      'Invitamos a toda la comunidad academica a participar en las jornadas culturales, muestras de innovacion y eventos deportivos que se llevaran a cabo en la sede central. Estudiantes y docentes pueden inscribir sus proyectos de investigacion aplicada y talentos culturales antes del 15 de marzo.',
+    contenido:
+      'La Corporacion Universitaria Remington abre oficialmente el periodo de postulaciones academicas, cientificas y culturales para la Semana Universitaria 2025, que se celebrara del 5 al 9 de mayo bajo el lema "Innovacion con Sentido Social y Territorio". Estudiantes de pregrado, posgrado, docentes investigadores y egresados quedan cordialmente invitados a participar activamente en este encuentro cuspe del ano lectivo. Las propuestas podrán adscribirse a dos modalidades primarias segun los objetivos de los participantes. Para dudas sobre el proceso de validacion o consultas tematicas, contactar al despacho de la Vicerrectoria Academica.',
+    tipo: 'evento',
+    estado: 'publicada',
+    fechaInicio: '2026-05-05',
+    fechaFin: '2026-05-09',
+    hora: '09:30',
+    lugar: 'Campus Central y Modalidad Virtual',
+    organizador: 'Vicerrectoria Academica y de Bienestar',
+    subtitulo: 'Noticias Campus',
+    credencial:
+      'Direccion de Comunicaciones Institucionales - Sede Central Medellin',
+    pieDeImagen:
+      'Pabellon Principal de Exposiciones y Agora Cultural Remington - Edificio Central',
+    ejes: [
+      {
+        numero: '01',
+        titulo: 'Mesas de Ponencias y Semilleros',
+        descripcion:
+          'Divulgacion de avances investigativos en Ciencias Juridicas, Ingenierias, Salud y Ciencias Empresariales. Modalidad de 15 minutos con espacio de debate.',
+      },
+      {
+        numero: '02',
+        titulo: 'Muestras Artisticas y Escenicas',
+        descripcion:
+          'Presentaciones de danza folklorica y contemporanea, ensambles musicales, fotografia documental universitaria y puestas en escena teatral en el Pabellon Abierto.',
+      },
+    ],
+    cronograma: [
+      {
+        rango: '28 Feb - 28 Mar',
+        titulo: 'Recepcion Resumenes',
+        nota: 'Convocatoria Activa',
+        estado: 'activo',
+      },
+      {
+        rango: '01 - 15 Abr',
+        titulo: 'Evaluacion de Pares',
+        nota: 'Comite Editorial',
+        estado: 'pendiente',
+      },
+      {
+        rango: '22 Abr',
+        titulo: 'Publicacion de Resultados',
+        nota: 'Notificacion por Correo',
+        estado: 'pendiente',
+      },
+      {
+        rango: '05 - 09 May',
+        titulo: 'Jornada Presencial',
+        nota: 'Apertura Magistral',
+        estado: 'pendiente',
+      },
+    ],
+    requisitos: [
+      'Estar matriculado activamente en cualquier sede o programa a distancia para el periodo academico 2025-1.',
+      'Adjuntar el resumen estructurado en formato PDF segun la plantilla oficial (maximo 500 palabras).',
+      'Contar con el aval por escrito del director de programa o coordinador del semillero de investigacion correspondiente.',
+      'Para agrupaciones culturales, presentar listado de requerimientos tecnicos scenicos en el anexo de registro.',
+    ],
+    contacto: {
+      email: 'semana.universitaria@uniremington.edu.co',
+      extension: '4421',
+    },
+    imagenUrl:
+      'https://lh3.googleusercontent.com/aida-public/AB6AXuC1UWXKePHFZCcPxP76tGJX53QMx912TClaIqjlj2bvY2xjsA5Qdu3B6N1mvjeqFMjPI60lKqPb48-hE27KNc5yuc_9Jf8zstX0ShwAltb9aSpuTdyFzZuJyjlSiZHmlXaMtiedKKx5TZ4GvfbC0xRHcGx2ABFW0ZIbcc6TDX9p68d7rY3AXF7TxT_7mHxM_qJ1Z21OSuWLXLEySw2-SF16tD1dtnN4gH34cIJdwPX6IXQ09nbXptcY',
+    avatarUrl:
+      'https://lh3.googleusercontent.com/aida-public/AB6AXuCuw9mZLd7SGsO9Jg1bk_CMNgkulWIu_xXv4vu5USDyG6nkPmm35iNpsFUvL3C4CxdKk88qdOYPsyzlWXJ7RQr-FM3T2H2ALVbzNwaN7Jq1DH119DcxT8xANmE7QYHIIs9nqsWh-yjshikTtBmgef2aUHMqFjsixMUTyFPOS3Z0NI-GXSVuJRgZXm2YuTD94N4gEqZd8HoPtNntqoZKH4WqVBvArMNORL2YBv4BYONu2X3AwknU42SJ',
+    adjuntos: [
+      {
+        nombre: 'Bases_de_la_Convocatoria_2025.pdf',
+        url: '#',
+        tipo: 'PDF',
+        tamanoKb: 1843,
+        editable: false,
+      },
+      {
+        nombre: 'Formulario_de_Inscripcion_Pabellon.docx',
+        url: '#',
+        tipo: 'DOCX',
+        tamanoKb: 420,
+        editable: true,
+      },
+    ],
+    etiquetas: ['ponencias', 'muestras', 'deportes'],
+    creadoPor: 'Juan Pabon',
+    creadoEn: '2026-02-28T09:30:00',
+    actualizadoEn: '2026-03-01T11:00:00',
+    destacado: true,
+    cupoMaximo: 800,
+    inscritos: 612,
+  },
+  {
+    id: 2,
+    titulo: 'Convocatoria Becas de Excelencia Academica 2026-2',
+    slug: 'convocatoria-becas-excelencia-2026-2',
+    resumen: 'Apertura de postulaciones para becas de excelencia academica para estudiantes de pregrado.',
+    contenido:
+      'Los estudiantes interesados deben presentar documentacion academica, carta de motivacion y certificado de ingresos economicos. El proceso de seleccion incluye entrevista y evaluacion de promedio ponderado.',
+    tipo: 'convocatoria',
+    estado: 'publicada',
+    fechaInicio: '2026-10-01',
+    fechaFin: '2026-10-30',
+    hora: '00:00',
+    lugar: 'Ventanilla de inscripciones - Rectoria',
+    organizador: 'Vicerrectoria Academica',
+    etiquetas: ['becas', 'pregrado'],
+    creadoPor: 'Ana Restrepo',
+    creadoEn: '2026-09-01T07:45:00',
+    actualizadoEn: '2026-09-05T16:00:00',
+    destacado: true,
+    cupoMaximo: 60,
+    inscritos: 58,
+  },
+  {
+    id: 3,
+    titulo:
+      'Ajuste extraordinario en horarios de atencion de ventanilla unica por jornada de actualizacion tecnica',
+    slug: 'ajuste-horarios-ventanilla-unica',
+    resumen:
+      'Se informa a estudiantes de pregrado, posgrado y publico en general que este jueves las ventanillas de Admisiones, Registro y Tesoreria operaran en horario continuo de 07:00 AM a 01:00 PM debido al mantenimiento preventivo de los servidores centrales. Las solicitudes digitales mediante el portal SIU seguirán activas sin interrupcion.',
+    contenido:
+      'Se recuerda a la comunidad que las solicitudes de certificaciones y tramites de grado iniciados en ventanilla se reanudaran en horario habitual el dia viernes a partir de las 08:00 AM. Durante la ventana de mantenimiento del datacenter, los portales externos de pago virtual operaran de manera independiente mediante el boton PSE institucional.',
+    tipo: 'aviso',
+    estado: 'publicada',
+    fechaInicio: '2026-03-26',
+    fechaFin: '2026-03-27',
+    hora: '07:00',
+    lugar: 'Ventanilla unica - Rectoria',
+    organizador: 'Secretaria General',
+    adjuntos: [
+      {
+        nombre: 'Circular_Informativa_SecGral_018_2025.pdf',
+        url: '#',
+        tipo: 'application/pdf',
+        tamanoKb: 418,
+      },
+    ],
+    etiquetas: ['ventanilla', 'mantenimiento', 'horarios'],
+    creadoPor: 'Ana Restrepo',
+    creadoEn: '2026-03-25T16:15:00',
+    actualizadoEn: '2026-03-25T16:15:00',
+    destacado: true,
+    inscritos: 0,
+  },
+  {
+    id: 4,
+    titulo: 'Publicacion del libro de memorias del Simposio Nacional de Inteligencia Artificial aplicada',
+    slug: 'libro-memorias-simposio-ia',
+    resumen:
+      'El Fondo Editorial Remington presenta la recopilacion de los 42 articulos cientificos seleccionados en la ultima edicion del simposio. La edicion incluye casos de estudio en optimizacion logistica, bioinformatica y etica algoritmica en la educacion superior latinoamericana.',
+    contenido:
+      'El libro se encuentra disponible en formato Open Access en el repositorio institucional con codigo DOI registrado. Docentes y semilleros pueden consultar el texto completo e interactuar con los conjuntos de datos en el portal de investigacion.',
+    tipo: 'noticia',
+    estado: 'publicada',
+    fechaInicio: '2026-02-24',
+    hora: '00:00',
+    lugar: 'Fondo Editorial Remington',
+    organizador: 'Direccion de Investigaciones',
+    imagenUrl:
+      'https://lh3.googleusercontent.com/aida-public/AB6AXuAABxH_BNBUjJbm4Ial4j2Fls1Th52pNF-j994DfVII7_EtC7P3AIyN2Vvq-73Ppz5Ab3PzvgfTPiN43lQWoKjGLi9yWv8n8d6OLZ6uevrshIHtvLt_t8YNuma4Lvkt_ETMsd9R6rjq33H_kNuKxBPksn7sB_slQKjVGMy3QS7kM1Xi2S1xehSxYYaqPQSwAbA5nMmZqg358iJMN8PmF_-yaOnuX7fLvokAfHkpeDuCVAV3hJpCxwLy',
+    etiquetas: ['editorial', 'investigacion', 'open-access'],
+    creadoPor: 'Juan Pabon',
+    creadoEn: '2026-02-24T10:00:00',
+    actualizadoEn: '2026-02-24T10:00:00',
+    destacado: false,
+    inscritos: 0,
+  },
+  {
+    id: 5,
+    titulo: 'Seminario de investigacion en ciencias de la salud',
+    slug: 'seminario-investigacion-salud',
+    resumen: 'Seminario de resultados de proyectos de investigacion en curso.',
+    contenido:
+      'Se presentaran los avances de cuatro grupos de investigacion. La jornada incluye mesa redonda sobre fortalezas y debilidades del proceso investigativo en la institucion.',
+    tipo: 'convocatoria',
+    estado: 'programada',
+    fechaInicio: '2026-11-28',
+    hora: '09:00',
+    lugar: 'Auditorio Bloque D',
+    organizador: 'Vicerrectoria de Investigacion',
+    etiquetas: ['investigacion', 'salud'],
+    creadoPor: 'Carlos Mejia',
+    creadoEn: '2026-10-01T15:45:00',
+    actualizadoEn: '2026-10-03T09:20:00',
+    destacado: false,
+    cupoMaximo: 180,
+    inscritos: 96,
+  },
+  {
+    id: 6,
+    titulo: 'Mantenimiento programado de la plataforma virtual institucional',
+    slug: 'mantenimiento-programado-plataforma-virtual',
+    resumen:
+      'La plataforma virtual institucional no estara disponible durante la ventana de mantenimiento.',
+    contenido:
+      'Tecnologias de la Informacion ejecutara un mantenimiento programado. Durante esa ventana no sera posible acceder a la plataforma virtual ni a los correos institucionales.',
+    tipo: 'institucional',
+    estado: 'borrador',
+    fechaInicio: '2026-10-18',
+    hora: '22:00',
+    lugar: 'Toda la institucion',
+    organizador: 'Tecnologias de la Informacion',
+    etiquetas: ['mantenimiento', 'plataforma'],
+    creadoPor: 'Ana Restrepo',
+    creadoEn: '2026-10-03T11:05:00',
+    actualizadoEn: '2026-10-03T11:05:00',
+    destacado: false,
+    inscritos: 0,
+  },
+];
+
+export const NOTIFICACIONES_MOCK: Notificacion[] = [
+  {
+    id: 1,
+    titulo: 'Recordatorio de evento',
+    mensaje:
+      'El seminario de Ciencias de la Salud inicia hoy a las 3:00 PM. Tu inscripcion esta confirmada.',
+    tipo: 'info',
+    categoria: 'evento',
+    etiqueta: 'Evento Proximo • Hoy',
+    icono: 'calendar_month',
+    leida: false,
+    creadaEn: '2026-10-03T09:00:00',
+    publicacionId: 5,
+    ubicacion: 'Campus Medellin • Auditorio Bloque A',
+    usuarioDestinoId: 1,
+  },
+  {
+    id: 2,
+    titulo: 'Circular oficial',
+    mensaje:
+      'La Secretaria General ha publicado un nuevo aviso: "Ajuste extraordinario en horarios de atencion de ventanilla unica por jornada de actualizacion tecnica".',
+    tipo: 'advertencia',
+    categoria: 'aviso',
+    etiqueta: 'Circular Oficial • Secretaria General',
+    icono: 'campaign',
+    leida: false,
+    creadaEn: '2026-10-02T10:00:00',
+    publicacionId: 3,
+    vigencia: 'Semestre 2026-2',
+    usuarioDestinoId: 1,
+  },
+  {
+    id: 3,
+    titulo: 'Actualizacion en guardados',
+    mensaje:
+      'Se ha agregado un archivo adjunto a la publicacion que guardaste: "Semana Universitaria Remington 2025: Convocatoria abierta para ponencias y muestras artisticas".',
+    tipo: 'exito',
+    categoria: 'guardado',
+    etiqueta: 'Actualizacion en Guardados',
+    icono: 'bookmark',
+    leida: true,
+    creadaEn: '2026-10-01T15:30:00',
+    publicacionId: 1,
+    origen: 'Facultad de Ciencias y Tecnologias',
+    adjunto: { nombre: 'Cronograma_Oficial_Semana_2025.pdf', peso: '1.4 MB' },
+    usuarioDestinoId: 1,
+  },
+];
+
+export const RECORDATORIOS_MOCK: Recordatorio[] = [
+  {
+    id: 1,
+    publicacionId: 1,
+    tituloPublicacion: 'Conferencia Internacional de Innovacion Tecnologica',
+    fechaEnvio: '2026-11-10',
+    horaEnvio: '09:00',
+    canales: ['correo', 'push'],
+    destinatarios: 312,
+    enviados: 0,
+    estado: 'programado',
+  },
+  {
+    id: 2,
+    publicacionId: 2,
+    tituloPublicacion: 'Convocatoria Becas de Excelencia Academica 2026-2',
+    fechaEnvio: '2026-10-28',
+    horaEnvio: '08:00',
+    canales: ['correo'],
+    destinatarios: 1450,
+    enviados: 0,
+    estado: 'programado',
+  },
+  {
+    id: 3,
+    publicacionId: 3,
+    tituloPublicacion: 'Suspension de actividades por mantenimiento de laboratorio',
+    fechaEnvio: '2026-10-18',
+    horaEnvio: '07:00',
+    canales: ['push', 'sms'],
+    destinatarios: 820,
+    enviados: 820,
+    estado: 'enviado',
+  },
+];

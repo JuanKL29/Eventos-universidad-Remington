@@ -1,0 +1,37 @@
+:host {
+  display: block;
+}
+
+/* El backdrop del modal de borrado se pinta desde aqui; .velo-modal aporta
+   el velo y el desenfoque del design system. */
+.velo-modal-fondo {
+  background-color: rgb(0 24 61 / 0.5);
+}
+
+/* Area de escritura del editor enriquecido */
+.editor:empty::before {
+  content: 'Describe la publicación...';
+  color: var(--color-outline);
+}
+
+.editor b,
+.editor strong {
+  font-weight: 700;
+}
+
+.editor a {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+
+.editor blockquote {
+  border-left: 3px solid var(--color-primary);
+  padding-left: var(--spacing-space-sm);
+  margin: var(--spacing-space-sm) 0;
+  color: var(--color-on-surface-variant);
+}
+
+.editor ul,
+.editor ol {
+  padding-left: var(--spacing-space-lg);
+}

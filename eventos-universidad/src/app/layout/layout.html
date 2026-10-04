@@ -1,0 +1,121 @@
+<header
+  class="fixed top-0 left-0 w-full z-50 bg-surface-container-lowest border-b border-hairline shadow-1"
+>
+  <div
+    class="h-16 max-w-7xl mx-auto px-margin-mobile lg:px-margin flex items-center justify-between gap-space-md"
+  >
+    <div class="flex items-center gap-space-md shrink-0">
+      <img
+        alt="Corporación Universitaria Remington"
+        class="h-9 w-auto object-contain"
+        src="https://lh3.googleusercontent.com/aida-public/AB6AXuASWLlbJl2gdc8tfVszGQhN_hvY1qPWvfy-eX-peYFLwToetaABc5RWj-CjjZcGjxg65J9P3pvU-2STUUy3nfQK4kXb7uVlpdsBiQmMqGtleV0pmjcuBqImCWBlfEu_E7nOIy5bZ4dCDLoRIeyltlm_S1ptCkHeIkLgQjxWjsWYOT0qgzHXyizi8--IMVK-Dw6Zk4NIMOG5U3tQGSob2AlIbF6YciiwF-Jrkis2PxpCIXlvB_chHdrCkr6aDOvproGk1Q"
+      />
+      <div class="hidden sm:flex flex-col">
+        <span class="font-headline-sm text-headline-sm text-primary leading-tight"
+          >Cartelera Uniremington</span
+        >
+        <span class="font-label-sm text-label-sm text-on-surface-variant"
+          >Campus Digital Informativo</span
+        >
+      </div>
+      <span
+        class="hidden md:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed-variant font-label-sm text-label-sm"
+      >
+        <span class="material-symbols-outlined text-xs">public</span>
+        Consulta Libre
+      </span>
+    </div>
+
+    <nav class="hidden md:flex items-center gap-space-xs lg:gap-space-sm">
+      <a
+        routerLink="/"
+        [routerLinkActiveOptions]="{ exact: true }"
+        routerLinkActive="bg-primary-fixed text-on-primary-fixed-variant font-semibold"
+        class="px-space-md py-1.5 rounded-full text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface font-label-lg text-label-lg transition-colors"
+        >Inicio</a
+      >
+      <!--
+        El pill "Publicaciones" (-> /panel/publicaciones) se retiredo a proposito:
+        esa vista aun no tiene diseno y el enlace llevaba a una pantalla muerta.
+        Restaurar cuando llegue el diseno de la vista 4.
+      -->
+    </nav>
+
+    <div class="flex items-center gap-space-sm shrink-0 pl-space-xs">
+      @if (auth.autenticado()) {
+        <a
+          routerLink="/notificaciones"
+          class="relative inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container hover:bg-primary hover:text-on-primary text-primary font-label-sm text-label-sm transition-colors shadow-sm"
+          title="Notificaciones y recordatorios"
+        >
+          <span class="material-symbols-outlined text-base">notifications</span>
+          <span class="hidden lg:inline">Notificaciones</span>
+          @if (noti.noLeidas() > 0) {
+            <span
+              class="absolute -top-1 -right-1 min-w-4 h-4 px-1 rounded-full bg-error text-on-error text-[10px] font-bold grid place-items-center"
+            >
+              {{ noti.noLeidas() }}
+            </span>
+          }
+        </a>
+        @if (auth.esAdmin()) {
+          <a
+            routerLink="/admin"
+            class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container hover:bg-primary hover:text-on-primary text-primary font-label-sm text-label-sm transition-colors shadow-sm"
+            title="Acceso exclusivo para administradores y moderadores"
+          >
+            <span class="material-symbols-outlined text-base">lock</span>
+            <span class="hidden lg:inline">Administracion</span>
+          </a>
+        }
+        <button
+          type="button"
+          (click)="auth.cerrarSesion()"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container hover:bg-primary-fixed font-label-sm text-label-sm transition-colors"
+          title="Cerrar sesion"
+        >
+          <span class="material-symbols-outlined text-base">logout</span>
+          <span class="hidden lg:inline">{{ auth.usuario()?.nombre }}</span>
+        </button>
+      } @else {
+        <a
+          routerLink="/login"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container hover:bg-primary hover:text-on-primary text-primary font-label-sm text-label-sm transition-colors shadow-sm"
+          title="Acceso exclusivo para administradores y moderadores"
+        >
+          <span class="material-symbols-outlined text-base">lock</span>
+          <span class="hidden lg:inline">Acceso Administrador</span>
+        </a>
+      }
+    </div>
+  </div>
+</header>
+
+<main class="w-full pt-16 bg-canvas min-h-screen">
+  <router-outlet />
+</main>
+
+<footer class="w-full bg-midnight text-on-primary mt-space-xl">
+  <div
+    class="max-w-7xl mx-auto px-margin-mobile lg:px-margin py-space-xl flex flex-col md:flex-row items-center justify-between gap-space-md"
+  >
+    <div class="flex items-center gap-space-sm">
+      <img
+        alt="Corporación Universitaria Remington"
+        class="h-8 w-auto object-contain opacity-80 invert"
+        src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-Kty6Am75wb_fWc9lpJ-5ZqlsGFJdU9REHV-zlO7hTOdgvRHygcMzqxChrBYAxyTj7FbM-bee6ZEG6CtDGWJhnkDHJT_zekTKeo1KR7MALArE2Tb1d7XDw3vNznAwNPxb2Uik-tOtbIBVuMO6_1HzCmdLtoqB1Hqm2rM1ChsI8aSbTLuuHFJrvYv8afQ4-reeXaUKzdHLfQMjd6gLH6A-a4gt0Ugqqi1Hgl15Dlmdvrt0B2Uvd40gjD3gBwUkC7sAkA"
+      />
+      <p class="font-body-sm text-body-sm text-on-primary/70">
+        &copy; 2024 Corporación Universitaria Remington. Cartelera Digital Oficial.
+      </p>
+    </div>
+    <div class="flex items-center gap-space-lg">
+      <a class="font-label-sm text-label-sm text-on-primary/70 hover:text-primary-fixed transition-colors" href="#"
+        >Politicas y Lineamientos</a
+      >
+      <a class="font-label-sm text-label-sm text-on-primary/70 hover:text-primary-fixed transition-colors" href="#"
+        >Soporte Institucional</a
+      >
+    </div>
+  </div>
+</footer>

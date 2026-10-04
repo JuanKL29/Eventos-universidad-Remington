@@ -1,0 +1,282 @@
+<div class="w-full px-space-xl py-space-lg">
+  <!-- Encabezado -->
+  <div class="flex flex-col w-full">
+    <div
+      class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md mb-space-xl"
+    >
+      <div class="flex flex-col">
+        <div class="flex items-center gap-space-xs mb-1">
+          <span
+            class="font-label-sm text-label-sm text-primary uppercase tracking-wider font-semibold"
+            >Módulo de Administración</span
+          >
+          <span class="w-1.5 h-1.5 rounded-full bg-primary/40"></span>
+          <span class="font-label-sm text-label-sm text-outline">Cartelera Central</span>
+        </div>
+        <h1 class="font-display-lg text-display-lg text-primary tracking-tight">
+          Gestión de Publicaciones
+        </h1>
+        <p class="font-body-md text-body-md text-on-surface-variant mt-1">
+          Control centralizado de publicaciones para la cartelera de usuarios y estudiantes
+        </p>
+      </div>
+      <div class="flex items-center gap-space-sm self-start lg:self-auto">
+        <a
+          routerLink="/admin/publicaciones/nueva"
+          class="btn-primario inline-flex items-center gap-2"
+        >
+          <span class="material-symbols-outlined text-lg">add</span>
+          <span>Crear publicación</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="bg-surface rounded-xl border border-hairline p-space-md mb-space-lg">
+      <div
+        class="flex flex-col md:flex-row items-stretch md:items-center gap-space-md justify-between"
+      >
+        <div class="relative flex-1 max-w-md">
+          <span
+            class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-outline text-xl pointer-events-none"
+            >search</span
+          >
+          <input
+            type="text"
+            class="w-full pl-10 pr-space-md py-2 bg-surface-container rounded-full text-on-surface font-body-md text-body-md placeholder:text-outline focus:outline-none focus:bg-surface focus:ring-2 focus:ring-primary-fixed transition-colors"
+            placeholder="Buscar publicaciones por título o autor..."
+            [value]="busqueda()"
+            (input)="actualizarBusqueda($event)"
+          />
+        </div>
+
+        <div class="flex flex-wrap items-center gap-space-sm">
+          <div class="flex items-center gap-space-xs bg-surface-container p-1 rounded-lg">
+            <span class="font-label-sm text-label-sm text-on-surface-variant px-2">Categoría:</span>
+            <select
+              class="bg-surface text-on-surface font-label-md text-label-md py-1.5 px-3 rounded-md focus:outline-none cursor-pointer"
+              [value]="categoria()"
+              (change)="actualizarCategoria($event)"
+            >
+              <option value="todas">Todas</option>
+              <option value="noticia">Noticias</option>
+              <option value="aviso">Avisos</option>
+              <option value="evento">Eventos</option>
+              <option value="convocatoria">Convocatorias</option>
+              <option value="institucional">Institucional</option>
+            </select>
+          </div>
+          <div class="flex items-center gap-space-xs bg-surface-container p-1 rounded-lg">
+            <span class="font-label-sm text-label-sm text-on-surface-variant px-2">Estado:</span>
+            <select
+              class="bg-surface text-on-surface font-label-md text-label-md py-1.5 px-3 rounded-md focus:outline-none cursor-pointer"
+              [value]="estado()"
+              (change)="actualizarEstado($event)"
+            >
+              <option value="todos">Todas</option>
+              <option value="publicada">Publicadas</option>
+              <option value="programada">Programadas</option>
+              <option value="borrador">Borradores</option>
+              <option value="archivada">Archivadas</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabla -->
+    <div class="bg-surface rounded-xl border border-hairline overflow-hidden flex flex-col">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left">
+          <thead>
+            <tr class="bg-surface-container text-on-surface-variant font-label-md text-label-md">
+              <th class="py-3.5 px-space-lg font-semibold" scope="col">Título de la publicación</th>
+              <th class="py-3.5 px-space-md font-semibold" scope="col">Categoría</th>
+              <th class="py-3.5 px-space-md font-semibold" scope="col">
+                Fecha de publicación
+              </th>
+              <th class="py-3.5 px-space-md font-semibold" scope="col">Estado</th>
+              <th class="py-3.5 px-space-lg text-right font-semibold" scope="col">Acciones</th>
+            </tr>
+          </thead>
+          <tbody class="text-on-surface font-body-md text-body-md">
+            @for (p of visibles(); track p.id) {
+              <tr class="border-t border-hairline hover:bg-surface-container/50 transition-colors group">
+                <td class="py-4 px-space-lg">
+                  <div class="flex items-center gap-3 min-w-0">
+                    <div
+                      class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 {{ fondoIcono[p.tipo] }}"
+                    >
+                      <span class="material-symbols-outlined text-lg">{{ iconoCategoria[p.tipo] }}</span>
+                    </div>
+                    <div class="flex flex-col min-w-0">
+                      <a
+                        [routerLink]="['/publicaciones', p.id]"
+                        class="font-headline-sm text-headline-sm text-on-surface truncate group-hover:text-primary transition-colors hover:underline"
+                        [title]="p.titulo"
+                        >{{ p.titulo }}</a
+                      >
+                      <span class="font-body-sm text-body-sm text-outline truncate">
+                        Por: {{ p.organizador }}
+                      </span>
+                    </div>
+                  </div>
+                </td>
+                <td class="py-4 px-space-md whitespace-nowrap">
+                  <span
+                    class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full font-label-sm text-label-sm {{ chipCategoria[p.tipo] }}"
+                  >
+                    <span class="w-1.5 h-1.5 rounded-full {{ puntoCategoria[p.tipo] }}"></span>
+                    {{ etiquetaCategoria[p.tipo] }}
+                  </span>
+                </td>
+                <td
+                  class="py-4 px-space-md whitespace-nowrap text-on-surface-variant font-body-sm text-body-sm"
+                >
+                  {{ fechaCorta(p.creadoEn.slice(0, 10)) }}
+                </td>
+                <td class="py-4 px-space-md whitespace-nowrap">
+                  <span
+                    class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full font-label-sm text-label-sm {{ chipEstado[p.estado] }}"
+                  >
+                    <span class="material-symbols-outlined text-xs leading-none">{{
+                      iconoEstado[p.estado]
+                    }}</span>
+                    {{ etiquetaEstado[p.estado] }}
+                  </span>
+                </td>
+                <td class="py-4 px-space-lg whitespace-nowrap text-right">
+                  <div class="inline-flex items-center gap-1 justify-end">
+                    <a
+                      [routerLink]="['/admin/publicaciones', p.id, 'editar']"
+                      class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-primary hover:bg-surface-container transition-colors font-label-sm text-label-sm"
+                      title="Editar publicación"
+                    >
+                      <span class="material-symbols-outlined text-base">edit</span>
+                      <span class="hidden sm:inline">Editar</span>
+                    </a>
+                    <button
+                      type="button"
+                      class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-accent-alert hover:bg-error-container transition-colors font-label-sm text-label-sm"
+                      title="Eliminar publicación"
+                      (click)="pedirBorrado(p)"
+                    >
+                      <span class="material-symbols-outlined text-base">delete</span>
+                      <span class="hidden sm:inline">Eliminar</span>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="5" class="py-16 px-space-lg text-center">
+                  <div class="flex flex-col items-center gap-2">
+                    <span class="material-symbols-outlined text-4xl text-outline">search_off</span>
+                    <p class="font-headline-sm text-headline-sm text-on-surface">
+                      No se encontraron publicaciones
+                    </p>
+                    <p class="font-body-sm text-body-sm text-muted">
+                      Ajusta la búsqueda o los filtros para ver resultados.
+                    </p>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Paginacion -->
+      <div
+        class="px-space-lg py-space-md bg-surface-container border-t border-hairline flex flex-col sm:flex-row items-center justify-between gap-space-sm"
+      >
+        <div class="flex items-center gap-2">
+          <span class="font-body-sm text-body-sm text-on-surface-variant">{{ resumen() }}</span>
+        </div>
+        <div class="flex items-center gap-1">
+          <button
+            type="button"
+            class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
+            [class.text-outline]="!hayAnterior()"
+            [class.cursor-not-allowed]="!hayAnterior()"
+            [class.text-on-surface]="hayAnterior()"
+            [class.hover:bg-surface]="hayAnterior()"
+            [disabled]="!hayAnterior()"
+            title="Página anterior"
+            (click)="irAPagina(pagina() - 1)"
+          >
+            <span class="material-symbols-outlined text-lg">chevron_left</span>
+          </button>
+          @for (n of paginas(); track n) {
+            <button
+              type="button"
+              class="w-8 h-8 rounded-lg font-label-sm text-label-sm flex items-center justify-center transition-colors"
+              [class.bg-primary]="pagina() === n"
+              [class.text-on-primary]="pagina() === n"
+              [class.text-outline]="pagina() !== n"
+              [class.hover:bg-surface]="pagina() !== n"
+              (click)="irAPagina(n)"
+            >
+              {{ n }}
+            </button>
+          }
+          <button
+            type="button"
+            class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
+            [class.text-outline]="!haySiguiente()"
+            [class.cursor-not-allowed]="!haySiguiente()"
+            [class.text-on-surface]="haySiguiente()"
+            [class.hover:bg-surface]="haySiguiente()"
+            [disabled]="!haySiguiente()"
+            title="Página siguiente"
+            (click)="irAPagina(pagina() + 1)"
+          >
+            <span class="material-symbols-outlined text-lg">chevron_right</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Confirmacion de borrado -->
+@if (porEliminar(); as objetivo) {
+  <div class="velo-modal fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div class="velo-modal-fondo absolute inset-0 bg-midnight/50" (click)="cancelarBorrado()"></div>
+    <div
+      class="relative bg-surface rounded-xl border border-hairline p-space-lg w-full max-w-md flex flex-col gap-space-md elev-3"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div class="flex items-start gap-3">
+        <div
+          class="w-10 h-10 rounded-full bg-error-container text-accent-alert flex items-center justify-center shrink-0"
+        >
+          <span class="material-symbols-outlined">warning</span>
+        </div>
+        <div class="flex flex-col">
+          <h2 class="font-headline-sm text-headline-sm text-on-surface">Eliminar publicación</h2>
+          <p class="font-body-sm text-body-sm text-muted mt-1">
+            Esta acción no se puede deshacer.
+          </p>
+        </div>
+      </div>
+      <p class="font-body-md text-body-md text-on-surface-variant">
+        ¿Seguro que deseas eliminar
+        <span class="font-semibold text-on-surface">{{ objetivo.titulo }}</span
+        >?
+      </p>
+      <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-space-sm">
+        <button type="button" class="btn-ghost justify-center" [disabled]="eliminando()" (click)="cancelarBorrado()">
+          Cancelar
+        </button>
+        <button type="button" class="btn-alerta justify-center" [disabled]="eliminando()" (click)="confirmarBorrado()">
+          <span class="material-symbols-outlined text-base">
+            {{ eliminando() ? 'progress_activity' : 'delete' }}
+          </span>
+          {{ eliminando() ? 'Eliminando...' : 'Sí, eliminar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

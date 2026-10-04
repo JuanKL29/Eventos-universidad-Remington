@@ -1,0 +1,588 @@
+<!--
+  Diseno original: "Panel de Administracion" (shell web_dashboard con sidebar propio).
+  Aqui se integra SOLO el contenido sobre el AdminShell existente, porque la
+  navegacion del diseno (Programas, Noticias, Sedes, Usuarios, Configuracion)
+  apunta a modulos que no existen en el proyecto y volverian a crear enlaces rotos.
+  Los KPIs, las categorias y los estados se traducen al dominio real de Publicacion.
+-->
+<section class="flex flex-col gap-space-lg">
+  <!-- ============================================================ ENCABEZADO -->
+  <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-space-md">
+    <div class="flex flex-col gap-space-xs">
+      <h1 class="font-display-lg text-display-lg text-primary">Panel de Administración</h1>
+      <p class="font-body-md text-body-md text-on-surface-variant">
+        Visibilidad general y gestion de la informacion institucional
+      </p>
+    </div>
+
+    <div class="flex items-center gap-space-sm">
+      <div class="relative flex-1 sm:w-72 sm:flex-none">
+        <span
+          class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg pointer-events-none"
+          >search</span
+        >
+        <input
+          type="search"
+          placeholder="Buscar contenido..."
+          aria-label="Buscar contenido"
+          class="w-full h-12 pl-10 pr-4 rounded-xl bg-surface-container-lowest border border-hairline text-body-sm text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
+          [value]="busqueda()"
+          (input)="actualizarBusqueda($event)"
+        />
+      </div>
+
+      <button type="button" class="btn-primario h-12 px-space-lg" (click)="abrirModal()">
+        <span class="material-symbols-outlined text-lg">add</span>
+        <span class="hidden sm:inline">Crear Contenido</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ================================================================= KPIs -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-space-md">
+    <div
+      class="bg-surface-container-lowest border border-hairline rounded-xl p-space-lg flex flex-col gap-space-sm elev-1"
+    >
+      <p class="font-label-md text-label-md uppercase tracking-wider text-on-surface-variant">
+        Publicaciones publicadas
+      </p>
+      <div class="flex items-end justify-between gap-space-sm">
+        <span class="font-display-lg text-display-lg text-primary">{{ kpiPublicadas() }}</span>
+        <div
+          class="w-12 h-12 rounded-xl bg-secondary-fixed text-on-secondary-fixed flex items-center justify-center shrink-0"
+        >
+          <span class="material-symbols-outlined text-2xl">campaign</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-space-xs pt-space-xs">
+        <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+        <span class="font-body-sm text-body-sm text-on-surface-variant">Visibles en cartelera</span>
+      </div>
+    </div>
+
+    <div
+      class="bg-surface-container-lowest border border-hairline rounded-xl p-space-lg flex flex-col gap-space-sm elev-1"
+    >
+      <p class="font-label-md text-label-md uppercase tracking-wider text-on-surface-variant">
+        Próximos eventos
+      </p>
+      <div class="flex items-end justify-between gap-space-sm">
+        <span class="font-display-lg text-display-lg text-primary">{{ kpiProximos() }}</span>
+        <div
+          class="w-12 h-12 rounded-xl bg-primary-fixed text-primary flex items-center justify-center shrink-0"
+        >
+          <span class="material-symbols-outlined text-2xl">event</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-space-xs pt-space-xs">
+        <span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+        <span class="font-body-sm text-body-sm text-on-surface-variant">Agenda del mes</span>
+      </div>
+    </div>
+
+    <div
+      class="bg-surface-container-lowest border border-hairline rounded-xl p-space-lg flex flex-col gap-space-sm elev-1"
+    >
+      <p class="font-label-md text-label-md uppercase tracking-wider text-on-surface-variant">
+        Sin publicar
+      </p>
+      <div class="flex items-end justify-between gap-space-sm">
+        <span class="font-display-lg text-display-lg text-primary">{{ kpiBorradores() }}</span>
+        <div
+          class="w-12 h-12 rounded-xl bg-surface-container text-on-surface flex items-center justify-center shrink-0"
+        >
+          <span class="material-symbols-outlined text-2xl">edit_square</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-space-xs pt-space-xs">
+        <span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
+        <span class="font-body-sm text-body-sm text-on-surface-variant">Borradores y programadas</span>
+      </div>
+    </div>
+
+    <div
+      class="bg-surface-container-lowest border border-hairline rounded-xl p-space-lg flex flex-col gap-space-sm elev-1"
+    >
+      <p class="font-label-md text-label-md uppercase tracking-wider text-on-surface-variant">
+        Notificaciones sin leer
+      </p>
+      <div class="flex items-end justify-between gap-space-sm">
+        <span class="font-display-lg text-display-lg text-primary">{{ kpiNoLeidas() }}</span>
+        <div
+          class="w-12 h-12 rounded-xl bg-surface-container text-on-surface flex items-center justify-center shrink-0"
+        >
+          <span class="material-symbols-outlined text-2xl">notifications</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-space-xs pt-space-xs">
+        <span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
+        <span class="font-body-sm text-body-sm text-on-surface-variant">{{ kpiUsuarios() }} usuarios</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================ FILTROS -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-md">
+    <div class="flex items-center gap-space-sm">
+      <span class="material-symbols-outlined text-on-surface-variant text-lg">filter_list</span>
+      <span class="font-label-md text-label-md text-on-surface-variant">Filtrar por estado:</span>
+      <select
+        aria-label="Filtrar por estado"
+        class="h-10 pl-3 pr-8 rounded-lg bg-surface-container-lowest border border-hairline font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary"
+        [value]="estado()"
+        (change)="actualizarEstado($event)"
+      >
+        <option value="todos">Todos los estados</option>
+        <option value="publicada">Publicado</option>
+        <option value="programada">Programada</option>
+        <option value="borrador">Borrador</option>
+        <option value="archivada">Archivada</option>
+      </select>
+    </div>
+
+    <p class="font-body-sm text-body-sm text-on-surface-variant">
+      {{ filtradas().length }} de {{ todas().length }} contenidos
+    </p>
+  </div>
+
+  <!-- ================================================================= TABLA -->
+  <div class="bg-surface-container-lowest border border-hairline rounded-xl overflow-hidden">
+    <!-- Tabs de categoria -->
+    <div class="border-b border-hairline px-space-md overflow-x-auto">
+      <div class="flex items-center gap-space-xs min-w-max">
+        @for (tab of tabs; track tab.valor) {
+          <button
+            type="button"
+            class="relative px-space-sm py-space-sm font-label-lg text-label-lg transition-colors whitespace-nowrap"
+            [class.text-primary]="categoria() === tab.valor"
+            [class.text-on-surface-variant]="categoria() !== tab.valor"
+            [attr.aria-pressed]="categoria() === tab.valor"
+            (click)="aplicarCategoria(tab.valor)"
+          >
+            {{ tab.etiqueta }}
+            @if (categoria() === tab.valor) {
+              <span class="absolute bottom-0 left-2 right-2 h-0.5 bg-primary rounded-full"></span>
+            }
+          </button>
+        }
+      </div>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="bg-surface-container-low border-b border-hairline">
+            <th
+              class="px-space-md py-space-sm font-label-md text-label-md uppercase tracking-wider text-on-surface-variant whitespace-nowrap"
+            >
+              Contenido
+            </th>
+            <th
+              class="px-space-md py-space-sm font-label-md text-label-md uppercase tracking-wider text-on-surface-variant whitespace-nowrap"
+            >
+              Fecha
+            </th>
+            <th
+              class="px-space-md py-space-sm font-label-md text-label-md uppercase tracking-wider text-on-surface-variant whitespace-nowrap"
+            >
+              Estado
+            </th>
+            <th
+              class="px-space-md py-space-sm font-label-md text-label-md uppercase tracking-wider text-on-surface-variant whitespace-nowrap"
+            >
+              Autor
+            </th>
+            <th
+              class="px-space-md py-space-sm font-label-md text-label-md uppercase tracking-wider text-on-surface-variant text-right whitespace-nowrap"
+            >
+              Acciones
+            </th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (p of visibles(); track p.id) {
+            <tr class="border-b border-hairline last:border-b-0 hover:bg-surface-container-lowest transition-colors">
+              <td class="px-space-md py-space-sm">
+                <div class="flex items-center gap-space-md">
+                  <div
+                    class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
+                    [class]="fondoIcono[p.tipo]"
+                  >
+                    <span class="material-symbols-outlined text-lg">{{ iconoTipo[p.tipo] }}</span>
+                  </div>
+                  <div class="min-w-0">
+                    <p class="font-body-md text-body-md text-on-surface truncate max-w-xs">
+                      {{ p.titulo }}
+                    </p>
+                    <span class="font-body-sm text-body-sm text-on-surface-variant">
+                      {{ etiquetaTipo[p.tipo] }} &middot; {{ p.lugar }}
+                    </span>
+                  </div>
+                </div>
+              </td>
+              <td
+                class="px-space-md py-space-sm font-body-sm text-body-sm text-on-surface-variant whitespace-nowrap"
+              >
+                {{ fechaCorta(p.fechaInicio) }}
+              </td>
+              <td class="px-space-md py-space-sm">
+                <span
+                  class="inline-flex items-center gap-space-xs px-space-sm py-1 rounded-full font-label-md text-label-md whitespace-nowrap"
+                  [class]="chipEstado[p.estado]"
+                >
+                  <span class="w-1.5 h-1.5 rounded-full" [class]="puntoEstado[p.estado]"></span>
+                  {{ etiquetaEstado[p.estado] }}
+                </span>
+              </td>
+              <td
+                class="px-space-md py-space-sm font-body-sm text-body-sm text-on-surface-variant whitespace-nowrap"
+              >
+                {{ p.organizador }}
+              </td>
+              <td class="px-space-md py-space-sm">
+                <div class="flex items-center justify-end gap-space-xs">
+                  <a
+                    [routerLink]="['/admin/publicaciones', p.id, 'editar']"
+                    class="w-8 h-8 flex items-center justify-center rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-primary transition-colors"
+                    [attr.aria-label]="'Editar ' + p.titulo"
+                    title="Editar"
+                  >
+                    <span class="material-symbols-outlined text-lg">edit</span>
+                  </a>
+
+                  <button
+                    type="button"
+                    class="w-8 h-8 flex items-center justify-center rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-primary transition-colors"
+                    [attr.aria-label]="
+                      p.estado === 'publicada' ? 'Archivar ' + p.titulo : 'Publicar ' + p.titulo
+                    "
+                    [title]="p.estado === 'publicada' ? 'Archivar' : 'Publicar'"
+                    (click)="alternarVisibilidad(p)"
+                  >
+                    <span class="material-symbols-outlined text-lg">
+                      {{ p.estado === 'publicada' ? 'visibility_off' : 'visibility' }}
+                    </span>
+                  </button>
+
+                  <button
+                    type="button"
+                    class="w-8 h-8 flex items-center justify-center rounded-lg text-on-surface-variant hover:bg-error-container hover:text-accent-alert transition-colors"
+                    [attr.aria-label]="'Eliminar ' + p.titulo"
+                    title="Eliminar"
+                    (click)="pedirBorrado(p)"
+                  >
+                    <span class="material-symbols-outlined text-lg">delete</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="5" class="px-space-md py-space-xl text-center">
+                <span class="material-symbols-outlined text-4xl text-outline block">search_off</span>
+                <p class="font-body-md text-body-md text-on-surface-variant mt-space-sm">
+                  No hay contenidos que coincidan con el filtro
+                </p>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Paginacion -->
+    @if (totalPaginas() > 1) {
+      <div
+        class="flex items-center justify-between gap-space-sm px-space-md py-space-sm border-t border-hairline bg-surface-container-lowest"
+      >
+        <span class="font-body-sm text-body-sm text-on-surface-variant">
+          Página {{ pagina() }} de {{ totalPaginas() }}
+        </span>
+        <div class="flex items-center gap-space-xs">
+          <button
+            type="button"
+            class="w-9 h-9 rounded-lg border border-hairline flex items-center justify-center text-on-surface-variant hover:bg-surface-container disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            [disabled]="!hayAnterior()"
+            aria-label="Pagina anterior"
+            (click)="irAPagina(pagina() - 1)"
+          >
+            <span class="material-symbols-outlined text-lg">chevron_left</span>
+          </button>
+          <button
+            type="button"
+            class="w-9 h-9 rounded-lg border border-hairline flex items-center justify-center text-on-surface-variant hover:bg-surface-container disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            [disabled]="!haySiguiente()"
+            aria-label="Pagina siguiente"
+            (click)="irAPagina(pagina() + 1)"
+          >
+            <span class="material-symbols-outlined text-lg">chevron_right</span>
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+</section>
+
+<!-- ==================================================== MODAL CREAR CONTENIDO -->
+@if (modalAbierto()) {
+  <div
+    class="velo-modal fixed inset-0 z-50 flex items-center justify-center p-4"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="titulo-modal"
+  >
+    <div class="velo-modal-fondo absolute inset-0" (click)="cerrarModal()"></div>
+
+    <div
+      class="relative bg-surface-container-lowest border border-hairline rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto elev-3"
+    >
+      <div
+        class="flex items-center justify-between px-space-lg py-space-md border-b border-hairline sticky top-0 bg-surface-container-lowest z-10"
+      >
+        <h2 id="titulo-modal" class="font-headline-sm text-headline-sm text-primary">
+          Crear Nuevo Contenido
+        </h2>
+        <button
+          type="button"
+          class="w-8 h-8 flex items-center justify-center rounded-lg text-on-surface-variant hover:bg-surface-container transition-colors"
+          aria-label="Cerrar"
+          (click)="cerrarModal()"
+        >
+          <span class="material-symbols-outlined text-lg">close</span>
+        </button>
+      </div>
+
+      <form class="p-space-lg flex flex-col gap-space-md" [formGroup]="formulario" (ngSubmit)="guardar()">
+        <div class="flex flex-col gap-space-xs">
+          <label for="f-titulo" class="font-label-md text-label-md text-on-surface-variant">
+            Titulo <span class="text-accent-alert">*</span>
+          </label>
+          <input
+            id="f-titulo"
+            type="text"
+            formControlName="titulo"
+            placeholder="Nombre del evento, convocatoria o noticia"
+            class="h-11 px-3 rounded-lg bg-surface-container-lowest border border-hairline text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary"
+            [class.border-accent-alert]="campoInvalido('titulo')"
+          />
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+          <div class="flex flex-col gap-space-xs">
+            <label for="f-tipo" class="font-label-md text-label-md text-on-surface-variant">Tipo</label>
+            <select
+              id="f-tipo"
+              formControlName="tipo"
+              class="h-11 px-3 rounded-lg bg-surface-container-lowest border border-hairline text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary"
+            >
+              <option value="evento">Evento</option>
+              <option value="convocatoria">Convocatoria</option>
+              <option value="aviso">Aviso</option>
+              <option value="noticia">Noticia</option>
+              <option value="institucional">Institucional</option>
+            </select>
+          </div>
+
+          <div class="flex flex-col gap-space-xs">
+            <label for="f-estado" class="font-label-md text-label-md text-on-surface-variant">
+              Estado
+            </label>
+            <select
+              id="f-estado"
+              formControlName="estado"
+              class="h-11 px-3 rounded-lg bg-surface-container-lowest border border-hairline text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary"
+            >
+              <option value="borrador">Borrador</option>
+              <option value="programada">Programada</option>
+              <option value="publicada">Publicado</option>
+              <option value="archivada">Archivada</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+          <div class="flex flex-col gap-space-xs">
+            <label for="f-fecha" class="font-label-md text-label-md text-on-surface-variant">
+              Fecha <span class="text-accent-alert">*</span>
+            </label>
+            <input
+              id="f-fecha"
+              type="date"
+              formControlName="fechaInicio"
+              class="h-11 px-3 rounded-lg bg-surface-container-lowest border border-hairline text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary"
+              [class.border-accent-alert]="campoInvalido('fechaInicio')"
+            />
+          </div>
+
+          <div class="flex flex-col gap-space-xs">
+            <label for="f-hora" class="font-label-md text-label-md text-on-surface-variant">
+              Hora <span class="text-accent-alert">*</span>
+            </label>
+            <input
+              id="f-hora"
+              type="time"
+              formControlName="hora"
+              class="h-11 px-3 rounded-lg bg-surface-container-lowest border border-hairline text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+          <div class="flex flex-col gap-space-xs">
+            <label for="f-lugar" class="font-label-md text-label-md text-on-surface-variant">
+              Lugar <span class="text-accent-alert">*</span>
+            </label>
+            <input
+              id="f-lugar"
+              type="text"
+              formControlName="lugar"
+              placeholder="Auditorio, sede o modalidad"
+              class="h-11 px-3 rounded-lg bg-surface-container-lowest border border-hairline text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary"
+              [class.border-accent-alert]="campoInvalido('lugar')"
+            />
+          </div>
+
+          <div class="flex flex-col gap-space-xs">
+            <label for="f-organizador" class="font-label-md text-label-md text-on-surface-variant">
+              Organizador <span class="text-accent-alert">*</span>
+            </label>
+            <input
+              id="f-organizador"
+              type="text"
+              formControlName="organizador"
+              placeholder="Dependencia o unidad"
+              class="h-11 px-3 rounded-lg bg-surface-container-lowest border border-hairline text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary"
+              [class.border-accent-alert]="campoInvalido('organizador')"
+            />
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-space-xs">
+          <label for="f-resumen" class="font-label-md text-label-md text-on-surface-variant">
+            Resumen <span class="text-accent-alert">*</span>
+          </label>
+          <textarea
+            id="f-resumen"
+            formControlName="resumen"
+            rows="2"
+            placeholder="Resumen breve que se muestra en la tarjeta de la cartelera"
+            class="px-3 py-2 rounded-lg bg-surface-container-lowest border border-hairline text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary resize-y"
+            [class.border-accent-alert]="campoInvalido('resumen')"
+          ></textarea>
+        </div>
+
+        <div class="flex flex-col gap-space-xs">
+          <label for="f-contenido" class="font-label-md text-label-md text-on-surface-variant">
+            Contenido <span class="text-accent-alert">*</span>
+          </label>
+          <textarea
+            id="f-contenido"
+            formControlName="contenido"
+            rows="4"
+            placeholder="Descripcion completa del contenido"
+            class="px-3 py-2 rounded-lg bg-surface-container-lowest border border-hairline text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary resize-y"
+            [class.border-accent-alert]="campoInvalido('contenido')"
+          ></textarea>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+          <div class="flex flex-col gap-space-xs">
+            <label for="f-etiquetas" class="font-label-md text-label-md text-on-surface-variant">
+              Etiquetas
+            </label>
+            <input
+              id="f-etiquetas"
+              type="text"
+              formControlName="etiquetas"
+              placeholder="Separadas por coma"
+              class="h-11 px-3 rounded-lg bg-surface-container-lowest border border-hairline text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+
+          <div class="flex flex-col gap-space-xs">
+            <label for="f-cupo" class="font-label-md text-label-md text-on-surface-variant">
+              Cupo maximo
+            </label>
+            <input
+              id="f-cupo"
+              type="number"
+              min="1"
+              formControlName="cupoMaximo"
+              placeholder="Opcional"
+              class="h-11 px-3 rounded-lg bg-surface-container-lowest border border-hairline text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+        </div>
+
+        <label class="flex items-center gap-space-sm cursor-pointer">
+          <input
+            type="checkbox"
+            formControlName="destacado"
+            class="w-4 h-4 accent-primary cursor-pointer"
+          />
+          <span class="font-body-md text-body-md text-on-surface">Marcar como destacado</span>
+        </label>
+
+        <div class="flex items-center justify-end gap-space-sm pt-space-sm">
+          <button type="button" class="btn-ghost" [disabled]="guardando()" (click)="cerrarModal()">
+            Cancelar
+          </button>
+          <button type="submit" class="btn-primario" [disabled]="guardando()">
+            <span class="material-symbols-outlined text-lg">save</span>
+            {{ guardando() ? 'Guardando...' : 'Guardar Contenido' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- =================================================== MODAL CONFIRMAR BORRADO -->
+@if (porEliminar(); as objetivo) {
+  <div
+    class="velo-modal fixed inset-0 z-50 flex items-center justify-center p-4"
+    role="alertdialog"
+    aria-modal="true"
+    aria-labelledby="titulo-borrado"
+  >
+    <div class="velo-modal-fondo absolute inset-0" (click)="cancelarBorrado()"></div>
+
+    <div
+      class="relative bg-surface-container-lowest border border-hairline rounded-xl w-full max-w-md p-space-lg flex flex-col gap-space-md elev-3"
+    >
+      <div class="flex items-start gap-space-md">
+        <div
+          class="w-12 h-12 rounded-xl bg-error-container text-accent-alert flex items-center justify-center shrink-0"
+        >
+          <span class="material-symbols-outlined text-2xl">warning</span>
+        </div>
+        <div class="flex flex-col gap-space-xs">
+          <h2 id="titulo-borrado" class="font-headline-sm text-headline-sm text-primary">
+            Eliminar contenido
+          </h2>
+          <p class="font-body-md text-body-md text-on-surface-variant">
+            Se eliminara permanentemente
+            <span class="text-on-surface font-medium">{{ objetivo.titulo }}</span>. Esta accion no se
+            puede deshacer.
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-space-sm">
+        <button type="button" class="btn-ghost" [disabled]="eliminando()" (click)="cancelarBorrado()">
+          Cancelar
+        </button>
+        <button
+          type="button"
+          class="inline-flex items-center gap-space-xs px-space-lg py-2.5 rounded-full bg-accent-alert text-white font-label-lg text-label-lg transition-colors disabled:opacity-50"
+          [disabled]="eliminando()"
+          (click)="confirmarBorrado()"
+        >
+          <span class="material-symbols-outlined text-lg">delete</span>
+          {{ eliminando() ? 'Eliminando...' : 'Eliminar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

@@ -1,0 +1,262 @@
+<div
+  class="min-h-screen flex flex-col justify-center items-center bg-canvas font-body-md text-on-surface"
+>
+  <main class="w-full flex-1 flex flex-col justify-center items-center p-space-md">
+    <div class="flex flex-col w-full items-center justify-center py-space-xl">
+      <div class="relative w-full max-w-md flex flex-col items-center">
+        <!-- Ambient background glow -->
+        <div
+          class="absolute -top-12 -left-12 w-48 h-48 bg-primary-fixed opacity-60 rounded-full blur-3xl pointer-events-none"
+        ></div>
+        <div
+          class="absolute -bottom-10 -right-10 w-44 h-44 bg-secondary-fixed opacity-50 rounded-full blur-2xl pointer-events-none"
+        ></div>
+
+        <!-- Main Clean Container Card -->
+        <div class="relative w-full bg-surface-container-lowest border border-hairline rounded-xl p-space-xl flex flex-col items-center">
+          <!-- Logo -->
+          <div class="w-full flex justify-center mb-space-lg">
+            <img
+              alt="Corporación Universitaria Remington"
+              class="h-12 w-auto object-contain mx-auto"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCRYVs27t4af0j6piA5gL999fi7tbiGLXr8aLihhYsRRgpjQ3ZJkyXuAr5FFixIUYbkhWwzktMTgYm_BuvJF0ytjwsh2pomZvilIFh0M2jV-xHPM8Si7p6RNOfi9s0RS3YxNi-MewuTuX_DvvctUgxXzQKytArSTqIBM67IUubqs5a0b7yJQzBjBk8Xz0R9TP01ueu3q1kwlcfBSJl2jgiEE5abuUGhBMvJswTvK6d8IjrvcGjXWRllDW9YSk6fKr5Dpg"
+            />
+          </div>
+
+          <!-- Header Typography -->
+          <div class="text-center w-full mb-space-lg">
+            <div
+              class="inline-flex items-center gap-space-xs px-space-sm py-0.5 rounded-full bg-primary-fixed mb-space-xs"
+            >
+              <span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+              <span
+                class="font-label-sm text-label-sm text-on-primary-fixed-variant tracking-wider uppercase"
+                >Gestion de Cartelera</span
+              >
+            </div>
+            <h1 class="font-headline-lg text-headline-lg text-primary mb-1 tracking-tight">
+              Acceso Administrativo
+            </h1>
+            <p class="font-body-md text-body-md text-on-surface-variant max-w-xs mx-auto">
+              Panel exclusivo para administradores y gestores de publicaciones universitarias
+            </p>
+          </div>
+
+          <!-- Quick Role Toggle Pill -->
+          <div
+            class="w-full flex gap-1 p-1 rounded-full bg-surface-container-low mb-space-md"
+            role="tablist"
+            aria-label="Tipo de acceso"
+          >
+            <button
+              type="button"
+              role="tab"
+              class="flex-1 py-1.5 px-space-sm rounded-full font-label-md text-label-md transition-all duration-200"
+              [class.bg-surface-container-lowest]="rol() === 'estudiante'"
+              [class.text-primary]="rol() === 'estudiante'"
+              [class.border]="rol() === 'estudiante'"
+              [class.border-hairline]="rol() === 'estudiante'"
+              [class.text-on-surface-variant]="rol() !== 'estudiante'"
+              [class.hover:text-primary]="rol() !== 'estudiante'"
+              [attr.aria-selected]="rol() === 'estudiante'"
+              (click)="seleccionarRol('estudiante')"
+            >
+              Estudiante / Docente
+            </button>
+            <button
+              type="button"
+              role="tab"
+              class="flex-1 py-1.5 px-space-sm rounded-full font-label-md text-label-md transition-all duration-200"
+              [class.bg-surface-container-lowest]="rol() === 'administrador'"
+              [class.text-primary]="rol() === 'administrador'"
+              [class.border]="rol() === 'administrador'"
+              [class.border-hairline]="rol() === 'administrador'"
+              [class.text-on-surface-variant]="rol() !== 'administrador'"
+              [class.hover:text-primary]="rol() !== 'administrador'"
+              [attr.aria-selected]="rol() === 'administrador'"
+              (click)="seleccionarRol('administrador')"
+            >
+              Administrador
+            </button>
+          </div>
+
+          <!-- Form -->
+          <form class="w-full flex flex-col gap-space-md" [formGroup]="formulario" (ngSubmit)="ingresar()">
+            <!-- Correo -->
+            <div class="flex flex-col gap-1">
+              <label
+                class="font-label-md text-label-md text-on-surface-variant flex items-center justify-between"
+                for="username"
+              >
+                <span>Usuario o Correo Institucional</span>
+                <span class="font-label-sm text-label-sm text-outline">{{ config.dominioCorreo }}</span>
+              </label>
+              <div class="relative flex items-center">
+                <span
+                  class="material-symbols-outlined absolute left-3 text-outline pointer-events-none text-[20px]"
+                  >alternate_email</span
+                >
+                <input
+                  id="username"
+                  name="username"
+                  type="text"
+                  formControlName="correo"
+                  autocomplete="username"
+                  placeholder="usuario{{ config.dominioCorreo }}"
+                  class="w-full bg-surface-container-low text-on-surface placeholder:text-outline font-body-md text-body-md pl-10 pr-4 py-2.5 rounded-lg outline-none focus:bg-surface-container-lowest transition-all"
+                  [class.border]="invalidar('correo')"
+                  [class.border-accent-alert]="invalidar('correo')"
+                  [class.border-hairline]="!invalidar('correo')"
+                />
+              </div>
+              @if (invalidar('correo')) {
+                <span class="font-label-sm text-label-sm text-accent-alert">
+                  {{ mensajeError('correo') }}
+                </span>
+              }
+            </div>
+
+            <!-- Contrasena -->
+            <div class="flex flex-col gap-1">
+              <div class="flex items-center justify-between">
+                <label class="font-label-md text-label-md text-on-surface-variant" for="password">
+                  Contrasena
+                </label>
+                <a class="font-label-sm text-label-sm text-primary hover:underline" href="#">
+                  Olvidaste tu contrasena?
+                </a>
+              </div>
+              <div class="relative flex items-center">
+                <span
+                  class="material-symbols-outlined absolute left-3 text-outline pointer-events-none text-[20px]"
+                  >lock</span
+                >
+                <input
+                  id="password"
+                  name="password"
+                  [type]="mostrarClave() ? 'text' : 'password'"
+                  formControlName="password"
+                  autocomplete="current-password"
+                  placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;"
+                  class="w-full bg-surface-container-low text-on-surface placeholder:text-outline font-body-md text-body-md pl-10 pr-11 py-2.5 rounded-lg outline-none focus:bg-surface-container-lowest transition-all"
+                  [class.border]="invalidar('password')"
+                  [class.border-accent-alert]="invalidar('password')"
+                  [class.border-hairline]="!invalidar('password')"
+                />
+                <button
+                  type="button"
+                  class="absolute right-3 text-outline hover:text-on-surface flex items-center justify-center p-1 focus:outline-none"
+                  (click)="alternarClave()"
+                  title="Mostrar / Ocultar contrasena"
+                  [attr.aria-label]="mostrarClave() ? 'Ocultar contrasena' : 'Mostrar contrasena'"
+                >
+                  <span class="material-symbols-outlined text-[20px]">
+                    {{ mostrarClave() ? 'visibility_off' : 'visibility' }}
+                  </span>
+                </button>
+              </div>
+              @if (invalidar('password')) {
+                <span class="font-label-sm text-label-sm text-accent-alert">
+                  {{ mensajeError('password') }}
+                </span>
+              }
+            </div>
+
+            <!-- Recordar -->
+            <div class="flex items-center justify-between pt-1">
+              <label class="flex items-center gap-2 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  formControlName="recordar"
+                  class="w-4 h-4 rounded bg-surface-container-low border-0 accent-primary cursor-pointer"
+                />
+                <span class="font-body-sm text-body-sm text-on-surface-variant"
+                  >Recordar en este equipo</span
+                >
+              </label>
+            </div>
+
+            <!-- Error -->
+            @if (error()) {
+              <div
+                class="flex items-start gap-2 p-3 rounded-lg bg-error-container text-on-error-container"
+              >
+                <span class="material-symbols-outlined text-lg shrink-0">error</span>
+                <span class="font-body-sm text-body-sm">{{ error() }}</span>
+              </div>
+            }
+
+            <!-- Submit -->
+            <button
+              type="submit"
+              id="submitButton"
+              [disabled]="estado() !== 'idle'"
+              class="w-full mt-space-xs py-3 px-space-lg rounded-full font-label-lg text-label-lg transition-all duration-200 flex items-center justify-center gap-space-xs"
+              [class.bg-primary]="estado() !== 'exito'"
+              [class.hover:bg-midnight]="estado() !== 'exito'"
+              [class.bg-accent-alert]="estado() === 'exito'"
+              [class.text-on-primary]="true"
+              [class.opacity-70]="estado() !== 'idle'"
+            >
+              @if (estado() === 'cargando') {
+                <span class="material-symbols-outlined animate-spin text-[18px]">progress_activity</span>
+              } @else if (estado() === 'exito') {
+                <span class="material-symbols-outlined text-[18px]">check_circle</span>
+              }
+              <span>{{ textoBoton() }}</span>
+              @if (estado() === 'idle') {
+                <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+              }
+            </button>
+          </form>
+
+          <!-- Acceso publico -->
+          <div
+            class="w-full mt-space-md p-space-md rounded-xl bg-surface-container-low text-center flex flex-col items-center gap-1"
+          >
+            <p class="font-body-sm text-body-sm text-on-surface-variant">
+              Eres estudiante, docente o visitante?
+            </p>
+            <a
+              routerLink="/"
+              class="font-label-md text-label-md text-primary font-semibold hover:underline inline-flex items-center gap-1"
+            >
+              <span class="material-symbols-outlined text-[16px]">campaign</span>
+              <span>Ver la Cartelera Publica directamente</span>
+              <span class="material-symbols-outlined text-[14px]">open_in_new</span>
+            </a>
+            <span class="font-label-sm text-label-sm text-outline">
+              No se requiere iniciar sesion para consultar las publicaciones
+            </span>
+          </div>
+
+          <!-- Seguridad -->
+          <div class="mt-space-lg pt-space-md w-full flex flex-col items-center gap-space-xs">
+            <div class="flex items-center gap-1.5 text-on-surface-variant">
+              <span class="material-symbols-outlined fill-1 text-[16px] text-primary">verified_user</span>
+              <span class="font-label-sm text-label-sm text-outline">
+                Sesion institucional protegida y cifrada
+              </span>
+            </div>
+            <div
+              class="flex items-center gap-space-sm font-label-sm text-label-sm text-outline mt-1"
+            >
+              <a class="hover:text-primary transition-colors" href="#">Soporte TI</a>
+              <span>&bull;</span>
+              <a class="hover:text-primary transition-colors" href="#">Politicas de Privacidad</a>
+              <span>&bull;</span>
+              <a class="hover:text-primary transition-colors" href="#">Mesa de Ayuda</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Copyright -->
+        <div class="mt-space-md text-center">
+          <p class="font-label-sm text-label-sm text-outline">
+            &copy; {{ config.institucion }}. Vigilada Mineducacion.
+          </p>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

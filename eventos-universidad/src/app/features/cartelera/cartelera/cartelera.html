@@ -1,0 +1,482 @@
+<div class="max-w-7xl mx-auto px-margin-mobile lg:px-margin py-space-lg">
+  <div class="flex flex-col w-full">
+    <div class="w-full grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+      <!-- LEFT SIDEBAR: FILTERS -->
+      <aside class="lg:col-span-4 xl:col-span-3 flex flex-col gap-space-md lg:sticky lg:top-20">
+        <!-- Search Box Card -->
+        <div class="elev-1 rounded-xl p-space-md">
+          <label
+            class="block font-label-md text-label-md text-on-surface-variant mb-space-xs"
+            for="feed-search-input"
+            >Busqueda rapida</label
+          >
+          <div class="relative flex items-center">
+            <span
+              class="material-symbols-outlined absolute left-3 text-outline text-lg pointer-events-none"
+              >search</span
+            >
+            <input
+              id="feed-search-input"
+              type="search"
+              class="w-full bg-surface-container-low pl-9 pr-3 py-2 rounded-full font-body-sm text-body-sm text-on-surface placeholder:text-outline outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary-container transition-all"
+              placeholder="Buscar publicaciones..."
+              [value]="busqueda()"
+              (input)="busqueda.set($any($event.target).value)"
+            />
+          </div>
+        </div>
+
+        <!-- Categories -->
+        <div class="elev-1 rounded-xl p-space-md flex flex-col gap-space-md">
+          <div>
+            <div class="flex items-center justify-between mb-space-sm">
+              <span class="font-label-lg text-label-lg text-primary">Categorias</span>
+              <span class="material-symbols-outlined text-outline text-sm">tune</span>
+            </div>
+            <div class="flex flex-wrap gap-1.5">
+              @for (opcion of categorias; track opcion.valor) {
+                <button
+                  type="button"
+                  class="px-3 py-1.5 rounded-full font-label-sm text-label-sm transition-all"
+                  [class.bg-primary]="categoria() === opcion.valor"
+                  [class.text-on-primary]="categoria() === opcion.valor"
+                  [class.bg-surface-container-low]="categoria() !== opcion.valor"
+                  [class.text-on-surface-variant]="categoria() !== opcion.valor"
+                  [class.hover:bg-surface-container]="categoria() !== opcion.valor"
+                  [attr.aria-pressed]="categoria() === opcion.valor"
+                  (click)="categoria.set(opcion.valor)"
+                >
+                  {{ opcion.etiqueta }}
+                </button>
+              }
+            </div>
+          </div>
+
+          <div class="pt-space-sm bg-surface-container-high h-[1px] w-full"></div>
+
+          <!-- State Filter -->
+          <div>
+            <span class="block font-label-md text-label-md text-on-surface-variant mb-space-xs"
+              >Orden</span
+            >
+            <div class="flex gap-2">
+              <label
+                class="flex items-center gap-2 cursor-pointer bg-surface-container-low hover:bg-surface-container px-3 py-1.5 rounded-lg flex-1"
+                [class.ring-2]="orden() === 'activas'"
+                [class.ring-primary]="orden() === 'activas'"
+              >
+                <input
+                  type="radio"
+                  name="filter-state"
+                  value="activas"
+                  class="accent-primary"
+                  [checked]="orden() === 'activas'"
+                  (change)="orden.set('activas')"
+                />
+                <span class="font-label-sm text-label-sm text-on-surface">Activas</span>
+              </label>
+              <label
+                class="flex items-center gap-2 cursor-pointer bg-surface-container-low hover:bg-surface-container px-3 py-1.5 rounded-lg flex-1"
+                [class.ring-2]="orden() === 'recientes'"
+                [class.ring-primary]="orden() === 'recientes'"
+              >
+                <input
+                  type="radio"
+                  name="filter-state"
+                  value="recientes"
+                  class="accent-primary"
+                  [checked]="orden() === 'recientes'"
+                  (change)="orden.set('recientes')"
+                />
+                <span class="font-label-sm text-label-sm text-on-surface">Recientes</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Access -->
+        <div class="elev-1 rounded-xl p-space-md">
+          <span class="block font-label-md text-label-md text-primary mb-space-sm">Accesos rapidos</span>
+          <div class="flex flex-col gap-1">
+            <a
+              routerLink="/notificaciones"
+              class="flex items-center justify-between p-2 rounded-lg hover:bg-surface-container-low text-on-surface-variant hover:text-primary transition-colors"
+            >
+              <span class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-error"></span>
+                <span class="font-label-sm text-label-sm">Notificaciones y recordatorios</span>
+              </span>
+              <span class="material-symbols-outlined text-sm">chevron_right</span>
+            </a>
+            <a
+              routerLink="/login"
+              class="flex items-center justify-between p-2 rounded-lg hover:bg-surface-container-low text-on-surface-variant hover:text-primary transition-colors"
+            >
+              <span class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-primary"></span>
+                <span class="font-label-sm text-label-sm">Acceso administrador</span>
+              </span>
+              <span class="material-symbols-outlined text-sm">chevron_right</span>
+            </a>
+          </div>
+          <div class="mt-space-xs pt-space-xs bg-surface-container-low rounded-lg p-2.5 flex items-center justify-between">
+            <span class="font-label-sm text-label-sm text-on-surface-variant">Publicaciones guardadas</span>
+            <span class="font-headline-sm text-headline-sm text-primary">{{ totalGuardados() }}</span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- CENTER FEED -->
+      <section class="lg:col-span-8 xl:col-span-9 flex flex-col gap-space-lg">
+        <!-- Live header -->
+        <div
+          class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm bg-surface-container-low p-space-md rounded-xl"
+        >
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-tertiary-container animate-pulse"></span>
+            <span class="font-label-lg text-label-lg text-primary">Cartelera Oficial en Vivo</span>
+            <span class="font-body-sm text-body-sm text-on-surface-variant"
+              >({{ visibles().length }} publicaciones activas)</span
+            >
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="font-label-sm text-label-sm text-on-surface-variant">Modo de vista:</span>
+            <span
+              class="inline-flex items-center gap-1 font-label-sm text-label-sm bg-surface-container-lowest text-primary px-2.5 py-1 rounded-md"
+            >
+              <span class="material-symbols-outlined text-xs">visibility</span>
+              Lectura institucional
+            </span>
+          </div>
+        </div>
+
+        @if (visibles().length === 0) {
+          <div
+            class="elev-1 rounded-xl p-space-xl text-center flex flex-col items-center gap-space-sm"
+          >
+            <span class="material-symbols-outlined text-4xl text-outline">search_off</span>
+            <p class="font-body-md text-body-md text-on-surface-variant">
+              No hay publicaciones que coincidan con tu busqueda.
+            </p>
+            <button
+              type="button"
+              class="px-4 py-1.5 rounded-full bg-surface-container text-primary font-label-lg text-label-lg hover:bg-surface-container-high"
+              (click)="busqueda.set(''); categoria.set('todas')"
+            >
+              Limpiar filtros
+            </button>
+          </div>
+        }
+
+        @for (p of visibles(); track trackPublicacion($index, p)) {
+          <article
+            class="elev-1 elev-2-hover rounded-xl overflow-hidden flex flex-col"
+            [class.relative]="p.tipo === 'aviso'"
+          >
+            @if (p.tipo === 'aviso') {
+              <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-tertiary-container"></div>
+            }
+
+            <!-- Header -->
+            <div
+              class="p-space-md sm:p-space-lg pb-0 flex items-start justify-between gap-space-md"
+              [class.pl-6]="p.tipo === 'aviso'"
+              [class.sm:pl-8]="p.tipo === 'aviso'"
+            >
+              <div class="flex items-center gap-3">
+                <div
+                  class="w-11 h-11 rounded-full flex items-center justify-center shrink-0 shadow-inner"
+                  [class]="avatarTipo[p.tipo]"
+                >
+                  <span class="material-symbols-outlined text-2xl">{{ iconoTipo[p.tipo] }}</span>
+                </div>
+                <div class="flex flex-col">
+                  <div class="flex items-center gap-1.5 flex-wrap">
+                    <span class="font-label-lg text-label-lg text-primary">{{ p.organizador }}</span>
+                    <span
+                      class="material-symbols-outlined text-primary text-base"
+                      title="Verificado institucionalmente"
+                      >verified</span
+                    >
+                  </div>
+                  <span class="font-body-sm text-body-sm text-on-surface-variant">
+                    Publicado {{ p.creadoEn | date: 'd MMM, y · h:mm a' : undefined : 'es' }}
+                  </span>
+                </div>
+              </div>
+
+              @if (p.tipo === 'aviso') {
+                <span
+                  class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-tertiary-fixed text-tertiary-container font-label-sm text-label-sm font-bold"
+                >
+                  <span class="w-2 h-2 rounded-full bg-tertiary-container animate-ping"></span>
+                  Aviso Institucional
+                </span>
+              } @else {
+                <span
+                  class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm"
+                  [class]="badgeTipo[p.tipo]"
+                >
+                  <span class="material-symbols-outlined text-sm">{{ iconoTipo[p.tipo] }}</span>
+                  {{ etiquetaTipo[p.tipo] }}
+                </span>
+              }
+            </div>
+
+            @if (p.tipo === 'evento') {
+              <div
+                class="mx-space-md sm:mx-space-lg mt-space-sm bg-surface-container-low px-space-md py-2 rounded-lg flex items-center gap-2 text-primary"
+              >
+                <span class="material-symbols-outlined text-base">calendar_today</span>
+                <span class="font-label-sm text-label-sm font-semibold">
+                  {{ rangoFechas(p) }} - {{ horaLegible(p.hora) }} • {{ p.lugar }}
+                </span>
+              </div>
+            }
+
+            <!-- Content -->
+            <div
+              class="p-space-md sm:p-space-lg pt-space-sm flex flex-col gap-space-sm"
+              [class.pt-space-md]="p.tipo !== 'evento'"
+              [class.pl-6]="p.tipo === 'aviso'"
+              [class.sm:pl-8]="p.tipo === 'aviso'"
+            >
+              @if (p.tipo === 'noticia') {
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-space-md items-center">
+                  <div class="md:col-span-8 flex flex-col gap-space-xs">
+                    <span
+                      class="font-label-sm text-label-sm text-secondary uppercase tracking-wider font-semibold"
+                      >Editorial Uniremington</span
+                    >
+                  </div>
+                  @if (p.imagenUrl) {
+                    <div class="md:col-span-4 h-44 rounded-xl overflow-hidden bg-surface-container shrink-0">
+                      <img
+                        class="w-full h-full object-cover hover:scale-105 transition-transform"
+                        [src]="p.imagenUrl"
+                        [alt]="p.titulo"
+                      />
+                    </div>
+                  }
+                </div>
+              } @else {
+                <h2
+                  class="font-headline-md text-headline-md text-on-surface font-bold leading-snug hover:text-primary transition-colors cursor-pointer"
+                  [class.hover:text-tertiary-container]="p.tipo === 'aviso'"
+                  (click)="abrirModal(p.id)"
+                >
+                  {{ p.titulo }}
+                </h2>
+              }
+
+              @if (p.tipo === 'noticia') {
+                <h2
+                  class="font-headline-md text-headline-md text-on-surface font-bold leading-snug hover:text-primary transition-colors cursor-pointer"
+                  (click)="abrirModal(p.id)"
+                >
+                  {{ p.titulo }}
+                </h2>
+                <p class="font-body-md text-body-md text-on-surface-variant leading-relaxed line-clamp-3">
+                  {{ p.resumen }}
+                </p>
+              } @else {
+                <p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                  {{ p.resumen }}
+                </p>
+              }
+
+              @if (p.imagenUrl && p.tipo === 'evento') {
+                <div
+                  class="relative w-full h-64 sm:h-80 rounded-xl overflow-hidden mt-space-xs bg-surface-container group cursor-pointer"
+                  (click)="abrirModal(p.id)"
+                >
+                  <img
+                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    [src]="p.imagenUrl"
+                    [alt]="p.titulo"
+                  />
+                  <div
+                    class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent flex items-end p-space-md"
+                  >
+                    <span class="text-on-primary font-label-md text-label-md flex items-center gap-1">
+                      <span class="material-symbols-outlined text-sm">photo_camera</span>
+                      Ver afiche oficial
+                    </span>
+                  </div>
+                </div>
+              }
+
+              @if (p.adjuntos?.length) {
+                <div
+                  class="bg-surface-container-low p-space-md rounded-xl flex items-center justify-between gap-space-md mt-space-xs"
+                >
+                  <div class="flex items-center gap-3 min-w-0">
+                    <div
+                      class="w-10 h-10 rounded-lg bg-surface-container-lowest flex items-center justify-center text-tertiary-container shrink-0"
+                    >
+                      <span class="material-symbols-outlined text-2xl">picture_as_pdf</span>
+                    </div>
+                    <div class="flex flex-col min-w-0">
+                      <span class="font-label-md text-label-md text-on-surface truncate">
+                        {{ p.adjuntos![0].nombre }}
+                      </span>
+                      <span class="font-body-sm text-body-sm text-on-surface-variant">
+                        Documento oficial validado • {{ p.adjuntos![0].tamanoKb }} KB
+                      </span>
+                    </div>
+                  </div>
+                  <a
+                    class="shrink-0 inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-surface-container hover:bg-surface-container-high text-primary font-label-sm text-label-sm transition-colors"
+                    [href]="p.adjuntos![0].url"
+                    download
+                  >
+                    <span class="material-symbols-outlined text-sm">download</span>
+                    <span class="hidden sm:inline">Descargar</span>
+                  </a>
+                </div>
+              }
+            </div>
+
+            <!-- Action bar -->
+            <div
+              class="px-space-md sm:px-space-lg py-space-sm bg-surface-container-low flex items-center justify-between"
+              [class.pl-6]="p.tipo === 'aviso'"
+              [class.sm:pl-8]="p.tipo === 'aviso'"
+            >
+              <button
+                type="button"
+                class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-primary text-on-primary hover:bg-primary-container font-label-lg text-label-lg transition-colors"
+                (click)="abrirModal(p.id)"
+              >
+                <span>Ver mas</span>
+                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+              </button>
+              <button
+                type="button"
+                class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full hover:bg-surface-container text-tertiary-container transition-colors"
+                [class.font-semibold]="guardados().has(p.id)"
+                [attr.title]="guardados().has(p.id) ? 'Quitar de guardados' : 'Guardar publicacion'"
+                (click)="alternarGuardado(p.id, $event)"
+              >
+                <span class="material-symbols-outlined text-lg">
+                  {{ guardados().has(p.id) ? 'bookmark' : 'bookmark_border' }}
+                </span>
+                <span class="font-label-sm text-label-sm">
+                  {{ guardados().has(p.id) ? 'Guardado' : 'Guardar' }}
+                </span>
+              </button>
+            </div>
+          </article>
+        }
+      </section>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+@if (publicacionModal(); as p) {
+  <div
+    class="fixed inset-0 z-[60] velo-modal flex items-center justify-center p-4"
+    (click)="cerrarModal()"
+  >
+    <div
+      class="elev-3 rounded-xl p-space-lg flex flex-col gap-space-md w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+      (click)="$event.stopPropagation()"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div class="flex items-center justify-between">
+        <span
+          class="px-2.5 py-1 rounded-full font-label-sm text-label-sm"
+          [class]="badgeTipo[p.tipo]"
+          [class.font-bold]="p.tipo === 'aviso'"
+        >
+          <span class="material-symbols-outlined text-sm align-middle">{{ iconoTipo[p.tipo] }}</span>
+          {{ etiquetaTipo[p.tipo] }}
+        </span>
+        <button
+          type="button"
+          class="p-1 rounded-full hover:bg-surface-container text-outline"
+          (click)="cerrarModal()"
+          aria-label="Cerrar"
+        >
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <div>
+        <h3
+          class="font-headline-lg text-headline-lg mb-2"
+          [class.text-primary]="p.tipo !== 'aviso'"
+          [class.text-on-surface]="p.tipo === 'aviso'"
+        >
+          {{ p.titulo }}
+        </h3>
+        <p class="font-label-md text-label-md text-on-surface-variant">{{ p.resumen }}</p>
+      </div>
+
+      <div
+        class="bg-surface-container-low p-space-md rounded-lg flex flex-col gap-2 font-body-sm text-body-sm"
+      >
+        <div class="flex items-center gap-2 text-on-surface">
+          <span class="material-symbols-outlined text-primary text-sm">schedule</span>
+          <span>
+            <strong>Fecha y hora:</strong>
+            {{ rangoFechas(p) }} - {{ horaLegible(p.hora) }}
+          </span>
+        </div>
+        <div class="flex items-center gap-2 text-on-surface">
+          <span class="material-symbols-outlined text-primary text-sm">location_on</span>
+          <span><strong>Lugar:</strong> {{ p.lugar }}</span>
+        </div>
+        <div class="flex items-center gap-2 text-on-surface">
+          <span class="material-symbols-outlined text-primary text-sm">account_balance</span>
+          <span><strong>Organiza:</strong> {{ p.organizador }}</span>
+        </div>
+        @if (p.cupoMaximo) {
+          <div class="flex items-center gap-2 text-on-surface">
+            <span class="material-symbols-outlined text-primary text-sm">groups</span>
+            <span>
+              <strong>Cupo:</strong> {{ p.inscritos }} / {{ p.cupoMaximo }} inscritos
+            </span>
+          </div>
+        }
+      </div>
+
+      <p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">{{ p.contenido }}</p>
+
+      @if (p.etiquetas.length) {
+        <div class="flex flex-wrap gap-1.5">
+          @for (etiqueta of p.etiquetas; track etiqueta) {
+            <span
+              class="px-2.5 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm"
+              >#{{ etiqueta }}</span
+            >
+          }
+        </div>
+      }
+
+      <div class="flex items-center justify-end gap-2 pt-space-sm">
+        <a
+          routerLink="/publicaciones/{{ p.id }}"
+          class="px-4 py-2 rounded-full bg-surface-container text-on-surface hover:bg-surface-container-high font-label-lg text-label-lg"
+          (click)="cerrarModal()"
+          >Ver ficha completa</a
+        >
+        <button
+          type="button"
+          class="px-4 py-2 rounded-full font-label-lg text-label-lg"
+          [class.bg-surface-container]="p.tipo !== 'aviso'"
+          [class.text-on-surface]="p.tipo !== 'aviso'"
+          [class.hover:bg-surface-container-high]="p.tipo !== 'aviso'"
+          [class.bg-primary]="p.tipo === 'aviso'"
+          [class.text-on-primary]="p.tipo === 'aviso'"
+          [class.hover:bg-primary-container]="p.tipo === 'aviso'"
+          (click)="cerrarModal()"
+        >
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+}

@@ -1,0 +1,259 @@
+<div class="max-w-7xl mx-auto px-margin-mobile lg:px-margin py-space-lg">
+  <div class="flex flex-col w-full">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+
+      <!-- ============ COLUMNA LATERAL CONTEXTUAL ============ -->
+      <aside class="hidden lg:flex lg:col-span-4 flex-col gap-space-md lg:sticky lg:top-20">
+
+        <!-- Resumen de la bandeja -->
+        <div class="elev-1 rounded-xl p-space-lg">
+          <div class="flex items-center gap-space-sm pb-space-sm">
+            <div class="w-11 h-11 rounded-full bg-secondary-fixed flex items-center justify-center text-primary shrink-0">
+              <span class="material-symbols-outlined fill-1 text-2xl">notifications_active</span>
+            </div>
+            <div class="min-w-0">
+              <p class="font-headline-sm text-headline-sm text-on-surface truncate">Bandeja Personal</p>
+              <p class="font-body-sm text-body-sm text-on-surface-variant truncate">{{ nombreUsuario() }}</p>
+            </div>
+          </div>
+
+          <div class="mt-space-md grid grid-cols-2 gap-space-sm">
+            <div class="bg-surface-container-low rounded-lg p-space-sm">
+              <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider block">No leídas</span>
+              <span
+                class="font-display-lg text-display-lg"
+                [class.text-error]="noLeidas() > 0"
+                [class.text-on-surface-variant]="noLeidas() === 0"
+                >{{ noLeidas() }}</span
+              >
+            </div>
+            <div class="bg-surface-container-low rounded-lg p-space-sm">
+              <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider block">Programados</span>
+              <span class="font-display-lg text-display-lg text-primary">{{ programados().length }}</span>
+            </div>
+          </div>
+
+          <!-- Progreso real de atencion -->
+          <div class="mt-space-md pt-space-sm">
+            <div class="flex items-center justify-between text-on-surface-variant mb-1">
+              <span class="font-label-sm text-label-sm">Avisos atendidos</span>
+              <span class="font-label-sm text-label-sm font-semibold text-primary">{{ porcentajeAtencion() }}%</span>
+            </div>
+            <div class="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden">
+              <div
+                class="bg-primary h-full rounded-full transition-all duration-500"
+                [style.width.%]="porcentajeAtencion()"
+              ></div>
+            </div>
+          </div>
+
+          <div class="mt-space-lg pt-space-md bg-surface-container-low/60 -mx-space-lg -mb-space-lg p-space-md rounded-b-xl flex items-center gap-space-xs text-on-surface-variant">
+            <span class="material-symbols-outlined text-sm text-primary">verified_user</span>
+            <span class="font-body-sm text-body-sm">Canal cifrado oficial de rectoría</span>
+          </div>
+        </div>
+
+        <!-- Agenda inmediata: primer recordatorio programado -->
+        @if (agendaInmediata(); as agenda) {
+          <div class="elev-1 rounded-xl p-space-lg">
+            <div class="flex items-center justify-between mb-space-sm">
+              <span class="font-label-md text-label-md text-primary uppercase">Agenda Inmediata</span>
+              <span
+                class="px-2 py-0.5 rounded-full font-label-sm text-label-sm"
+                [class.bg-error-container]="esHoy(agenda.fechaEnvio)"
+                [class.text-on-error-container]="esHoy(agenda.fechaEnvio)"
+                [class.bg-surface-container]="!esHoy(agenda.fechaEnvio)"
+                [class.text-on-surface-variant]="!esHoy(agenda.fechaEnvio)"
+                >{{ esHoy(agenda.fechaEnvio) ? 'Hoy' : 'Próximo' }}</span
+              >
+            </div>
+            <div class="flex gap-space-sm items-start mt-space-xs">
+              <div class="w-9 h-9 rounded-lg bg-primary-fixed flex flex-col items-center justify-center text-on-primary-fixed shrink-0">
+                <span class="font-label-sm text-label-sm uppercase font-bold leading-none">{{ diaAgenda(agenda.fechaEnvio) }}</span>
+                <span class="font-headline-sm text-headline-sm leading-none mt-0.5">{{ numeroDia(agenda.fechaEnvio) }}</span>
+              </div>
+              <div class="min-w-0">
+                <h4 class="font-headline-sm text-headline-sm text-on-surface leading-tight">
+                  {{ agenda.tituloPublicacion }}
+                </h4>
+                <p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+                  {{ hora(agenda.horaEnvio) }} • Envío programado
+                </p>
+              </div>
+            </div>
+          </div>
+        }
+      </aside>
+
+      <!-- ============ FLUJO PRINCIPAL ============ -->
+      <section class="col-span-1 lg:col-span-8 flex flex-col gap-space-md">
+
+        <!-- Titulo, filtros y acciones -->
+        <div class="elev-1 rounded-xl p-space-lg flex flex-col gap-space-md">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm">
+            <div>
+              <span class="font-label-sm text-label-sm text-primary tracking-wide uppercase font-semibold">Panel de Actividad</span>
+              <h1 class="font-headline-lg text-headline-lg text-primary mt-0.5">Notificaciones y Recordatorios</h1>
+            </div>
+            <button
+              type="button"
+              class="self-start sm:self-auto inline-flex items-center gap-space-xs px-space-md py-1.5 rounded-full bg-surface-container hover:bg-surface-container-high text-primary font-label-md text-label-md transition-all active:scale-95 disabled:opacity-60 disabled:cursor-default"
+              [disabled]="noLeidas() === 0"
+              (click)="marcarTodas()"
+            >
+              <span class="material-symbols-outlined text-base">{{ noLeidas() === 0 ? 'done' : 'done_all' }}</span>
+              <span>{{ noLeidas() === 0 ? 'Todas leídas' : 'Marcar todas como leídas' }}</span>
+            </button>
+          </div>
+
+          <div class="flex items-center gap-space-xs overflow-x-auto pb-1" role="tablist">
+            @for (chip of chips; track chip.valor) {
+              <button
+                type="button"
+                role="tab"
+                class="px-space-md py-1 rounded-full font-label-md text-label-md shrink-0 transition-colors"
+                [class.bg-primary]="filtro() === chip.valor"
+                [class.text-on-primary]="filtro() === chip.valor"
+                [class.shadow-sm]="filtro() === chip.valor"
+                [class.bg-surface-container-low]="filtro() !== chip.valor"
+                [class.text-on-surface-variant]="filtro() !== chip.valor"
+                [class.hover:bg-surface-container]="filtro() !== chip.valor"
+                [attr.aria-selected]="filtro() === chip.valor"
+                (click)="aplicarFiltro(chip.valor)"
+              >
+                {{ chip.etiqueta }}
+                @if (chip.conContador && noLeidas() > 0) {
+                  <span class="ml-1 px-1.5 py-0.2 rounded-full bg-error text-on-error font-label-sm text-label-sm">{{ noLeidas() }}</span>
+                }
+              </button>
+            }
+          </div>
+        </div>
+
+        <!-- Lista de notificaciones -->
+        <div class="flex flex-col gap-space-sm">
+          @for (n of visibles(); track n.id) {
+            <article
+              class="elev-1 rounded-xl p-space-md sm:p-space-lg transition-all duration-200 cursor-pointer hover:elev-2-hover"
+              [class.opacity-90]="n.leida"
+              [class.opacity-100]="!n.leida"
+              (click)="abrir(n)"
+            >
+              <div class="flex items-start gap-space-md">
+                <div class="relative shrink-0 mt-0.5">
+                  <div class="w-12 h-12 rounded-full flex items-center justify-center" [class]="claseIcono(n)">
+                    <span class="material-symbols-outlined fill-1 text-2xl">{{ n.icono }}</span>
+                  </div>
+                  @if (!n.leida) {
+                    <span class="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-error ring-2 ring-surface-container-lowest"></span>
+                  }
+                </div>
+
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center justify-between gap-space-sm mb-1">
+                    <span class="inline-flex items-center gap-1 font-label-sm text-label-sm font-semibold" [class]="claseEtiqueta(n)">
+                      <span class="w-1.5 h-1.5 rounded-full" [class]="puntoEtiqueta(n.categoria)"></span>
+                      {{ n.etiqueta }}
+                    </span>
+                    <span class="font-body-sm text-body-sm text-on-surface-variant shrink-0 flex items-center gap-1">
+                      <span class="material-symbols-outlined text-xs">schedule</span>
+                      {{ tiempo(n.creadaEn) }}
+                    </span>
+                  </div>
+
+                  <p class="font-body-lg text-body-lg text-on-surface font-medium">{{ n.mensaje }}</p>
+
+                  <!-- Vista previa de adjunto -->
+                  @if (n.adjunto; as adjunto) {
+                    <div class="mt-space-sm py-space-xs px-space-sm bg-surface-container-low rounded-lg inline-flex items-center gap-space-xs max-w-full">
+                      <span class="material-symbols-outlined text-error text-lg">picture_as_pdf</span>
+                      <span class="font-body-sm text-body-sm text-on-surface truncate">{{ adjunto.nombre }}</span>
+                      <span class="font-label-sm text-label-sm text-outline shrink-0">({{ adjunto.peso }})</span>
+                    </div>
+                  }
+
+                  <div class="mt-space-sm pt-space-xs flex flex-wrap items-center justify-between gap-space-sm">
+                    <span class="font-body-sm text-body-sm text-on-surface-variant inline-flex items-center gap-1">
+                      @if (n.ubicacion) {
+                        <span class="material-symbols-outlined text-base text-outline">location_on</span>
+                        <span>{{ n.ubicacion }}</span>
+                      } @else if (n.vigencia) {
+                        <span class="material-symbols-outlined text-base text-outline">verified</span>
+                        <span>Vigencia: {{ n.vigencia }}</span>
+                      } @else if (n.origen) {
+                        <span class="material-symbols-outlined text-sm text-outline">folder_open</span>
+                        <span>{{ n.origen }}</span>
+                      }
+                    </span>
+
+                    <div class="flex items-center gap-space-xs">
+                      @if (n.adjunto) {
+                        <button
+                          type="button"
+                          class="inline-flex items-center gap-1 px-space-md py-1.5 rounded-full bg-secondary-fixed hover:bg-secondary-fixed-dim text-on-secondary-fixed font-label-md text-label-md transition-colors"
+                          (click)="descargar(n.adjunto!); $event.stopPropagation()"
+                        >
+                          <span class="material-symbols-outlined text-sm">download</span>
+                          <span>Descargar archivo</span>
+                        </button>
+                      }
+                      @if (n.publicacionId) {
+                        <a
+                          class="inline-flex items-center gap-1 px-space-md py-1.5 rounded-full font-label-md text-label-md transition-colors"
+                          [class.bg-primary]="n.categoria === 'evento'"
+                          [class.text-on-primary]="n.categoria === 'evento'"
+                          [class.hover:bg-on-primary-fixed-variant]="n.categoria === 'evento'"
+                          [class.bg-surface-container]="n.categoria !== 'evento'"
+                          [class.hover:bg-secondary-fixed]="n.categoria !== 'evento'"
+                          [class.text-primary]="n.categoria !== 'evento'"
+                          [routerLink]="['/publicaciones', n.publicacionId]"
+                          (click)="$event.stopPropagation()"
+                        >
+                          <span>{{ n.categoria === 'aviso' ? 'Ver detalle' : 'Ver publicación' }}</span>
+                          <span class="material-symbols-outlined text-sm">
+                            {{ n.categoria === 'aviso' ? 'visibility' : 'arrow_forward' }}
+                          </span>
+                        </a>
+                      }
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </article>
+          } @empty {
+            <!-- Sin resultados para el filtro activo -->
+            <div class="elev-1 rounded-xl p-space-xl flex flex-col items-center justify-center text-center">
+              <div class="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center text-outline">
+                <span class="material-symbols-outlined text-2xl">search_off</span>
+              </div>
+              <p class="font-headline-sm text-headline-sm text-on-surface mt-space-md">Sin notificaciones para este filtro</p>
+              <p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5 max-w-md">
+                No hay elementos que coincidan con la selección actual.
+              </p>
+              <button
+                type="button"
+                class="mt-space-md px-space-md py-1.5 rounded-full bg-surface-container hover:bg-surface-container-high text-primary font-label-md text-label-md"
+                (click)="aplicarFiltro('todas')"
+              >
+                Ver todas
+              </button>
+            </div>
+          }
+        </div>
+
+        <!-- Pie de estado: solo cuando no queda nada pendiente -->
+        @if (noLeidas() === 0) {
+          <footer class="mt-space-md py-space-lg flex flex-col items-center justify-center text-center px-space-md rounded-xl bg-surface-container-low/50">
+            <div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-outline mb-space-xs">
+              <span class="material-symbols-outlined text-xl">check_circle</span>
+            </div>
+            <p class="font-headline-sm text-headline-sm text-on-surface">Estás al día con las notificaciones de la cartelera</p>
+            <p class="font-body-sm text-body-sm text-on-surface-variant max-w-md mt-0.5">
+              Te notificaremos instantáneamente tan pronto como se publiquen acuerdos académicos, avisos de rectoría o recordatorios de agenda.
+            </p>
+          </footer>
+        }
+      </section>
+    </div>
+  </div>
+</div>
